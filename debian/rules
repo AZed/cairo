@@ -1,0 +1,204 @@
+#!/usr/bin/make -f
+
+# Configure for cairo packages
+
+# Supported backends (as of Cairo 1.5.4):
+#  (internal) Image
+#  xlib       Xlib
+#  pdf        PDF
+#  ps         PostScript
+#  svg        SVG
+#
+# Experimental and unsupported backends:
+#  directfb  DirectFB (requires Build-Depend on libdirectfb-dev (>=0.9.25) )
+#  glitz     OpenGL (glitz)
+#  xcb       XCB  (requires Build-Depend on at least libxcb1-dev)
+#
+# Other platform backends are auto disabled: quartz/OSX, win32/Win32
+#
+# Features:
+# --enable-png  PNG (default enabled)
+#
+MAIN_CONFIGURE_FLAGS = \
+--enable-xlib --enable-pdf --enable-ps --enable-svg \
+--disable-glitz --enable-xcb --enable-directfb \
+--enable-png
+
+# udeb package flags
+#  directfb  DirectFB (requires Build-Depend on libdirectfb-dev (>= 0.9.25) )
+DIRECTFB_CONFIGURE_FLAGS = \
+--enable-directfb \
+--disable-xlib  --enable-pdf --enable-ps --disable-svg \
+--disable-glitz --disable-xcb \
+--enable-png \
+--program-suffix=-directfb
+
+SRC_DIR=$(CURDIR)
+MAIN_BUILD_DIR=$(CURDIR)/debian/build-main
+DIRECTFB_BUILD_DIR=$(CURDIR)/debian/build-directfb
+
+MAIN_DIST_DIR=$(CURDIR)/debian/dist-main
+DIRECTFB_DIST_DIR=$(CURDIR)/debian/dist-directfb
+
+export DEB_HOST_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+export DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+
+CFLAGS = -g
+CFLAGS_UDEB = -g
+
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -O0
+	CFLAGS_UDEB += -O0
+else
+	CFLAGS += -O2
+	CFLAGS_UDEB += -Os
+endif
+ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
+	INSTALL_PROGRAM += -s
+endif
+
+# For autoconf 2.13 only
+CONFFLAGS=
+ifeq ($(DEB_BUILD_GNU_TYPE), $(DEB_HOST_GNU_TYPE))
+	CONFFLAGS += $(DEB_HOST_GNU_TYPE)
+else
+	CONFFLAGS += --build $(DEB_BUILD_GNU_TYPE) --host $(DEB_HOST_GNU_TYPE)
+endif
+
+package := tmp
+prefix  := /usr
+share   := $(prefix)/share
+
+version := $(shell dpkg-parsechangelog | \
+		sed -ne 's/^Version: *\([0-9]\+:\)*//p')
+
+include /usr/share/dpatch/dpatch.make
+
+configure: configure-main
+
+configure-common-stamp: patch-stamp
+	dh_testdir
+
+# handle timestamp skew; advice from autotools-dev README.Debian
+	touch configure.in && \
+	touch aclocal.m4 && \
+	touch configure
+
+	touch $@
+
+# Calling GNU configure properly; advice from autotools-dev README.Debian
+configure-main: configure-common-stamp configure-main-stamp
+configure-main-stamp: configure-common-stamp
+	dh_testdir
+	mkdir -p $(MAIN_BUILD_DIR); \
+	cd $(MAIN_BUILD_DIR); \
+	$(SRC_DIR)/configure \
+		CFLAGS="$(CFLAGS)" \
+		$(CONFFLAGS) \
+		--prefix=$(prefix) \
+		--mandir=$(share)/man \
+		--infodir=$(share)/info \
+		$(MAIN_CONFIGURE_FLAGS)
+	touch $@
+
+configure-udeb: configure-common-stamp configure-udeb-stamp
+configure-udeb-stamp: configure-common-stamp
+	dh_testdir
+	mkdir -p $(DIRECTFB_BUILD_DIR); \
+	cd $(DIRECTFB_BUILD_DIR); \
+	$(SRC_DIR)/configure \
+		CFLAGS="$(CFLAGS_UDEB)" \
+		$(CONFFLAGS) \
+		--prefix=$(prefix) \
+		--mandir=$(share)/man \
+		--infodir=$(share)/info \
+		$(DIRECTFB_CONFIGURE_FLAGS)
+	touch $@
+
+
+build: build-main build-udeb
+
+build-main: build-main-stamp
+build-main-stamp: configure-main-stamp
+	dh_testdir
+	cd $(MAIN_BUILD_DIR) && $(MAKE)
+	touch $@
+
+build-udeb: build-udeb-stamp
+build-udeb-stamp: configure-udeb-stamp
+	dh_testdir
+	cd $(DIRECTFB_BUILD_DIR) && $(MAKE)
+	touch $@
+
+clean: unpatch
+	dh_testdir
+	dh_testroot
+	rm -f *-stamp libtool
+	rm -rf debian/libcairo2 debian/libcairo2-dev debian/libcairo2-doc libcairo-directfb2-udeb debian/libcairo-directfb2-udeb-dev debian/libcairo-directfb2
+	rm -rf $(MAIN_BUILD_DIR) $(DIRECTFB_BUILD_DIR) $(MAIN_DIST_DIR) $(DIRECTFB_DIST_DIR)
+
+	-rm -f config.h config.cache config.status config.log
+
+# Copy in fresh copies of config.{sub,guess}
+# (these are from autotools-dev, so must Build-Depend on it)
+	-test -r /usr/share/misc/config.sub && \
+	  cp -f /usr/share/misc/config.sub config.sub
+	-test -r /usr/share/misc/config.guess && \
+	  cp -f /usr/share/misc/config.guess config.guess
+
+	dh_clean
+
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+
+	cd $(MAIN_BUILD_DIR) && $(MAKE) install DESTDIR=$(MAIN_DIST_DIR)
+
+	cd $(DIRECTFB_BUILD_DIR) && $(MAKE) install DESTDIR=$(DIRECTFB_DIST_DIR)
+
+	sed -i "/dependency_libs/ s/'.*'/''/" $(MAIN_DIST_DIR)/usr/lib/*.la
+
+# Build architecture-independent files here.
+binary-indep: build install
+	dh_testdir
+	dh_testroot
+	dh_install -i
+	dh_installchangelogs -i ChangeLog
+	dh_installdocs -i -A NEWS README AUTHORS
+	dh_link -i
+	dh_compress -i
+	dh_fixperms -i
+	dh_installdeb -i
+	dh_gencontrol -i
+	dh_md5sums -i
+	dh_builddeb -i
+
+# Build architecture-dependent files here.
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+	dh_install -s
+	dh_installdocs -s -A README NEWS AUTHORS
+	dh_installchangelogs -s ChangeLog
+	dh_installman -s
+	dh_installexamples -s
+	dh_link -s
+	dh_strip -s --dbg-package=libcairo2-dbg -Nlibcairo-directfb2-udeb
+	dh_strip -plibcairo-directfb2-udeb
+	dh_compress -s
+	dh_fixperms -s
+	dh_makeshlibs -plibcairo2 --add-udeb=libcairo-directfb2-udeb -V 'libcairo2 (>= 1.6.4-6.1)' -- -c4
+	dh_installdeb -s
+	dh_shlibdeps -s
+	dh_perl -s
+	dh_gencontrol -s
+	dh_md5sums -s
+	dh_builddeb -s
+
+binary: binary-indep binary-arch
+
+.PHONY: build clean binary-indep binary-arch binary install configure \
+	patch unpatch clean
