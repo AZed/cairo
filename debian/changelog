@@ -1,12 +1,165 @@
-cairo (1.6.4-7) unstable; urgency=low
+cairo (1.8.10-6) unstable; urgency=low
 
-  * ACK NMU, thanks Joss.
-  * debian/patches/03_buggy-repeat.dpatch:
-    + Patch from the Mozilla team to work around a bug in
-      some buggy X video drivers that cause incorrect image
-      rendering (Closes: #495620 and many duplicates).
+  * debian/patches/02_iceweasel-buggy-repeat.patch:
+    + Revert logic of the patch for the infamous iceweasel rendering
+      problems. The only broken X11 driver that is left seems to be
+      fglrx and always enabling the workaround code in cairo causes
+      severe performance degradations for everybody (Closes: #594245).
+      Thanks for Josselin Mouette for the patch.
+      Everybody using the fglrx driver should set the MOZ_CAIRO_BUGGY_REPEAT
+      environment variable, everybody else should get a correctly working
+      and fast cairo again.
 
- -- Sebastian Dröge <slomo@debian.org>  Thu, 04 Dec 2008 18:20:31 +0100
+ -- Sebastian Dröge <slomo@debian.org>  Fri, 10 Sep 2010 10:48:34 +0200
+
+cairo (1.8.10-5) unstable; urgency=low
+
+  * debian/patches/02_iceweasel-buggy-repeat.patch:
+    + Patch from Mozilla to work around a display bug in iceweasel with
+      some buggy X11 video drivers (Closes: #495620, #593294).
+      http://mxr.mozilla.org/firefox/source/gfx/cairo/buggy-repeat.patch
+
+      After squeeze this patch will again be dropped because it's
+      just a hacky workaround for a real problem in some X11 video
+      drivers.
+
+ -- Sebastian Dröge <slomo@debian.org>  Tue, 17 Aug 2010 05:48:52 +0200
+
+cairo (1.8.10-4) unstable; urgency=low
+
+  * debian/rules:
+    + Add --disable-silent-rules --disable-shave to configure flags.
+  * debian/control,
+    debian/rules,
+    debian/libcairo-directfb2*:
+    + Drop DirectFB backend completely now, it's marked experimental
+      upstream and was only enabled for the debian-installer, which now
+      uses X11 anyway.
+  * debian/control:
+    + Drop obsolete Replaces and Conflicts which were for versions many
+      releases ago.
+    + Add ${misc:Depends} and ${shlibs:Depends} wherever necessary.
+  * debian/rules:
+    + Use dh_prep instead of dh_clean -k.
+  * debian/patches/99_ltmain_as-needed.patch,
+    debian/rules:
+    + Link with -Wl,-z,defs -Wl,-O1 -Wl,--as-needed.
+
+ -- Sebastian Dröge <slomo@debian.org>  Tue, 13 Apr 2010 08:34:29 +0200
+
+cairo (1.8.10-3) unstable; urgency=low
+
+  [ Cyril Brulebois ]
+  * Switch udeb from DirectFB to Xlib to prepare the move to an X11-based
+    graphical installer:
+     - Ship libcairo2-udeb instead of libcairo-directfb2-udeb.
+     - Update package description accordingly.
+     - Rename udeb’s .install file accordingly.
+     - Adapt package name for various dh_* calls accordingly.
+     - Switch --enable-directfb and --enable-xlib in *configure_flags
+       variables, and get rid of --program-suffix=-directfb, no longer
+       needed.
+  * Version/Bump some B-D to make sure the udeb gets its dependencies on
+    the (recently-added) udebs rather than on the libraries:
+     - libx11-dev
+     - libxrender-dev
+  * Thanks to Julien Cristau for his initial patch.
+
+  [ Sebastian Dröge ]
+  * Upload to unstable (Closes: #573394).
+
+ -- Sebastian Dröge <slomo@debian.org>  Sun, 14 Mar 2010 19:31:51 +0100
+
+cairo (1.8.10-2) unstable; urgency=low
+
+  * debian/rules:
+    + Don't touch configure.in and friends.
+  * debian/control:
+    + Add Breaks for xulrunner and iceape until they're fixed
+      (Closes: #571192, #561859, #551570, #551852, #555412, #562698).
+  * debian/control:
+    + Fix sections (Closes: #486174, #515919).
+
+ -- Sebastian Dröge <slomo@debian.org>  Thu, 25 Feb 2010 13:16:47 +0100
+
+cairo (1.8.10-1) unstable; urgency=low
+
+  * New upstream bugfix release.
+  * debian/patches,
+    debian/source/format,
+    debian/rules,
+    debian/control,
+    debian/compat:
+    + Update to source format 3.0 (quilt).
+    + Update to debhelper compat level 7.
+    + Update Standards-Version to 3.8.4.
+  * debian/rules:
+    + Don't update config.guess/config.sub, upstream doesn't use them.
+    + Don't delete cairo-features.h in clean.
+
+ -- Sebastian Dröge <slomo@debian.org>  Tue, 23 Feb 2010 10:53:10 +0100
+
+cairo (1.8.8-2) unstable; urgency=low
+
+  * Upload to unstable.
+
+ -- Sebastian Dröge <slomo@debian.org>  Thu, 18 Jun 2009 08:59:17 +0200
+
+cairo (1.8.8-1) experimental; urgency=low
+
+  [ Loïc Minier ]
+  * Use "udeb" consistently to describe this flavor
+  * Rename CFLAGS to CFLAGS_MAIN for consistency
+  * Rename %-flavor-stamp targets to %-stamp-flavor
+  * Also strip dependency_libs in DEB_DIST_DIR
+  * Always lowercase the flavor name in vars
+  * Drop unused configure-main and udeb targets
+  * Drop dangerous configure target listed in .PHONY
+  * Drop build-main and build-udeb targets
+  * Make the build and configure rules implicit ones
+  * Define builddir using the current_flavor
+  * Split flavors installation into a install-% target
+  * Move debian/build-* and /dist-* to nicer places
+  * Misc cleanups
+  * Factor configure flags
+  * Fix --host and --build handling
+  * Remove useless cleanups
+  * Factor "touch" calls
+  * Save and restore config.guess and .sub
+  * Drop INSTALL_PROGRAM, not needed with dh_strip
+  * Factor CFLAGS; add -Wall
+  * Implement an optional optimized flavor
+
+  [ Sebastian Dröge ]
+  * New upstream bugfix release.
+  * Update Standards-Version to 3.8.2.
+  * Update sections of binary packages
+
+ -- Sebastian Dröge <slomo@debian.org>  Wed, 17 Jun 2009 16:47:55 +0200
+
+cairo (1.8.6-2) unstable; urgency=low
+
+  * Upload to unstable.
+
+ -- Sebastian Dröge <slomo@debian.org>  Tue, 17 Feb 2009 09:56:44 +0100
+
+cairo (1.8.6-1) experimental; urgency=low
+
+  * New upstream bugfix release.
+
+ -- Sebastian Dröge <slomo@debian.org>  Tue, 16 Dec 2008 14:55:53 +0100
+
+cairo (1.8.4-1) experimental; urgency=low
+
+  * New upstream bugfix release.
+
+ -- Sebastian Dröge <slomo@debian.org>  Sat, 15 Nov 2008 08:46:56 +0100
+
+cairo (1.8.2-2) experimental; urgency=low
+
+  * ACK NMU and merge all changes, thanks Joss.
+
+ -- Sebastian Dröge <slomo@debian.org>  Wed, 05 Nov 2008 12:59:03 +0100
 
 cairo (1.6.4-6.1) unstable; urgency=low
 
@@ -29,6 +182,53 @@ cairo (1.6.4-6.1) unstable; urgency=low
   * Standards version is 3.8.0.
 
  -- Josselin Mouette <joss@debian.org>  Mon, 13 Oct 2008 11:00:24 +0200
+
+cairo (1.8.2-1) experimental; urgency=low
+
+  * New upstream stable release:
+    + debian/control:
+      - Update (Build-)Depends.
+      - Fix section of libcairo2 from docs to libs.
+    + debian/watch:
+      - Update location for releases.
+    + debian/rules:
+      - Patch from Ubuntu package to update config.guess/sub again properly.
+      - Update shlibs to 1.8.0 because of new API.
+      - Remove src/cairo-features.h as it's generated by configure and breaks
+        the build if it's already there.
+    + debian/libcairo-directfb2.symbols,
+      debian/libcairo2.symbols:
+      - Updated symbols.
+  * debian/patches/02_no-private-symbol-export.dpatch:
+    + Re-added to not export some private symbols.
+
+ -- Sebastian Dröge <slomo@debian.org>  Wed, 05 Nov 2008 12:17:09 +0100
+
+cairo (1.7.4-1) experimental; urgency=low
+
+  * New upstream snapshot release
+  * Removed debian/patches/02_no-private-symbol-export.dpatch merged upstream
+  * Removed debian/patches/01_directfb-no-accel.dpatch
+    Hoping that this GIT commit makes it moot:
+    + commit 7fbda72137d8685718a8e8fe1d3af5b1d377521c
+      Date: Sun Aug 10 05:05:27 2008 -0700
+  * Known packaging errors:
+    - not copying new config.sub/config.guess for now
+
+ -- Dave Beckett <dajobe@debian.org>  Thu, 11 Sep 2008 23:03:15 -0700
+
+cairo (1.6.4-7) unstable; urgency=low
+
+  * debian/rules:
+    + Remove libtool .la dependency_libs (Closes: #491292)
+  * debian/control:
+    + Update to standards version 3.8.0
+    + Move libcairo2-doc to 'doc' section (Closes: #486174)
+  * debian/dpatch/*: Added ##DP descriptions (lintian)
+  * debian/libcairo2.symbols: Removed symbols with a debian revision (lintian)
+  * debian/libcairo2-doc.doc-base: Use section "Graphics" (lintian)
+
+ -- Dave Beckett <dajobe@debian.org>  Sun, 07 Sep 2008 15:33:00 -0700
 
 cairo (1.6.4-6) unstable; urgency=low
 
