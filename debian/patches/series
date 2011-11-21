@@ -1,3 +1,9 @@
-01_no-private-symbol-export.patch
-04_lcd_filter.patch
-06_Xlib-Xcb-Hand-off-EXTEND_PAD-to-XRender.patch
+01_build_perf_utils.patch
+02_am-maintainer-mode.patch
+03_export-symbols.patch
+04-LD_PRELOAD-is-supported-on-Hurd.patch
+05-flto.patch
+cairo-lp-680628.patch
+server_side_gradients.patch
+
+debian-changes-1.10.2-6.1ubuntu1
