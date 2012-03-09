@@ -15,8 +15,20 @@ libcairo.so.2 libcairo2 #MINVER#
  cairo_curve_to@Base 1.2.4
  cairo_debug_reset_static_data@Base 1.2.4
  cairo_destroy@Base 1.2.4
+ cairo_device_acquire@Base 1.10.0
+ cairo_device_destroy@Base 1.10.0
+ cairo_device_finish@Base 1.10.0
+ cairo_device_flush@Base 1.10.0
+ cairo_device_get_reference_count@Base 1.10.0
+ cairo_device_get_type@Base 1.10.0
+ cairo_device_get_user_data@Base 1.10.0
+ cairo_device_reference@Base 1.10.0
+ cairo_device_release@Base 1.10.0
+ cairo_device_set_user_data@Base 1.10.0
+ cairo_device_status@Base 1.10.0
  cairo_device_to_user@Base 1.2.4
  cairo_device_to_user_distance@Base 1.2.4
+# (arch=!hurd-any)cairo_egl_device_create@Base 1.10.2-2~
  cairo_fill@Base 1.2.4
  cairo_fill_extents@Base 1.2.4
  cairo_fill_preserve@Base 1.2.4
@@ -70,6 +82,17 @@ libcairo.so.2 libcairo2 #MINVER#
  cairo_get_target@Base 1.2.4
  cairo_get_tolerance@Base 1.2.4
  cairo_get_user_data@Base 1.4.10
+# cairo_gl_surface_create@Base 1.10.2-2~
+# (arch=!hurd-any)cairo_gl_surface_create_for_egl@Base 1.10.2-2~
+# cairo_gl_surface_create_for_texture@Base 1.10.2-2~
+# cairo_gl_surface_create_for_window@Base 1.10.2-2~
+# cairo_gl_surface_get_height@Base 1.10.2-2~
+# cairo_gl_surface_get_width@Base 1.10.2-2~
+# cairo_gl_surface_set_size@Base 1.10.2-2~
+# cairo_gl_surface_swapbuffers@Base 1.10.2-2~
+# cairo_glx_device_create@Base 1.10.2-2~
+# cairo_glx_device_get_context@Base 1.10.2-2~
+# cairo_glx_device_get_display@Base 1.10.2-2~
  cairo_glyph_allocate@Base 1.7.2
  cairo_glyph_extents@Base 1.2.4
  cairo_glyph_free@Base 1.7.2
@@ -85,6 +108,7 @@ libcairo.so.2 libcairo2 #MINVER#
  cairo_image_surface_get_height@Base 1.2.4
  cairo_image_surface_get_stride@Base 1.2.4
  cairo_image_surface_get_width@Base 1.2.4
+ cairo_in_clip@Base 1.10.0
  cairo_in_fill@Base 1.2.4
  cairo_in_stroke@Base 1.2.4
  cairo_line_to@Base 1.2.4
@@ -135,9 +159,12 @@ libcairo.so.2 libcairo2 #MINVER#
  cairo_pattern_set_matrix@Base 1.2.4
  cairo_pattern_set_user_data@Base 1.4.10
  cairo_pattern_status@Base 1.2.4
+ cairo_pdf_get_versions@Base 1.10.0
  cairo_pdf_surface_create@Base 1.2.4
  cairo_pdf_surface_create_for_stream@Base 1.2.4
+ cairo_pdf_surface_restrict_to_version@Base 1.10.0
  cairo_pdf_surface_set_size@Base 1.2.4
+ cairo_pdf_version_to_string@Base 1.10.0
  cairo_pop_group@Base 1.2.4
  cairo_pop_group_to_source@Base 1.2.4
  cairo_ps_get_levels@Base 1.6.0
@@ -153,9 +180,34 @@ libcairo.so.2 libcairo2 #MINVER#
  cairo_ps_surface_set_size@Base 1.2.4
  cairo_push_group@Base 1.2.4
  cairo_push_group_with_content@Base 1.2.4
+ cairo_recording_surface_create@Base 1.10.0
+ cairo_recording_surface_ink_extents@Base 1.10.0
  cairo_rectangle@Base 1.2.4
  cairo_rectangle_list_destroy@Base 1.4.10
  cairo_reference@Base 1.2.4
+ cairo_region_contains_point@Base 1.10.0
+ cairo_region_contains_rectangle@Base 1.10.0
+ cairo_region_copy@Base 1.10.0
+ cairo_region_create@Base 1.10.0
+ cairo_region_create_rectangle@Base 1.10.0
+ cairo_region_create_rectangles@Base 1.10.0
+ cairo_region_destroy@Base 1.10.0
+ cairo_region_equal@Base 1.10.0
+ cairo_region_get_extents@Base 1.10.0
+ cairo_region_get_rectangle@Base 1.10.0
+ cairo_region_intersect@Base 1.10.0
+ cairo_region_intersect_rectangle@Base 1.10.0
+ cairo_region_is_empty@Base 1.10.0
+ cairo_region_num_rectangles@Base 1.10.0
+ cairo_region_reference@Base 1.10.0
+ cairo_region_status@Base 1.10.0
+ cairo_region_subtract@Base 1.10.0
+ cairo_region_subtract_rectangle@Base 1.10.0
+ cairo_region_translate@Base 1.10.0
+ cairo_region_union@Base 1.10.0
+ cairo_region_union_rectangle@Base 1.10.0
+ cairo_region_xor@Base 1.10.0
+ cairo_region_xor_rectangle@Base 1.10.0
  cairo_rel_curve_to@Base 1.2.4
  cairo_rel_line_to@Base 1.2.4
  cairo_rel_move_to@Base 1.2.4
@@ -212,14 +264,17 @@ libcairo.so.2 libcairo2 #MINVER#
  cairo_stroke_extents@Base 1.2.4
  cairo_stroke_preserve@Base 1.2.4
  cairo_surface_copy_page@Base 1.6.0
+ cairo_surface_create_for_rectangle@Base 1.10.0
  cairo_surface_create_similar@Base 1.2.4
  cairo_surface_destroy@Base 1.2.4
  cairo_surface_finish@Base 1.2.4
  cairo_surface_flush@Base 1.2.4
  cairo_surface_get_content@Base 1.2.4
+ cairo_surface_get_device@Base 1.10.0
  cairo_surface_get_device_offset@Base 1.2.4
  cairo_surface_get_fallback_resolution@Base 1.7.2
  cairo_surface_get_font_options@Base 1.2.4
+ cairo_surface_get_mime_data@Base 1.10.0
  cairo_surface_get_reference_count@Base 1.4.10
  cairo_surface_get_type@Base 1.2.4
  cairo_surface_get_user_data@Base 1.2.4
@@ -229,6 +284,7 @@ libcairo.so.2 libcairo2 #MINVER#
  cairo_surface_reference@Base 1.2.4
  cairo_surface_set_device_offset@Base 1.2.4
  cairo_surface_set_fallback_resolution@Base 1.2.4
+ cairo_surface_set_mime_data@Base 1.10.0
  cairo_surface_set_user_data@Base 1.2.4
  cairo_surface_show_page@Base 1.6.0
  cairo_surface_status@Base 1.2.4
@@ -239,6 +295,10 @@ libcairo.so.2 libcairo2 #MINVER#
  cairo_svg_surface_create_for_stream@Base 1.2.4
  cairo_svg_surface_restrict_to_version@Base 1.2.4
  cairo_svg_version_to_string@Base 1.2.4
+ cairo_tee_surface_add@Base 1.10.2-2~
+ cairo_tee_surface_create@Base 1.10.2-2~
+ cairo_tee_surface_index@Base 1.10.2-2~
+ cairo_tee_surface_remove@Base 1.10.2-2~
  cairo_text_cluster_allocate@Base 1.7.2
  cairo_text_cluster_free@Base 1.7.2
  cairo_text_extents@Base 1.2.4
@@ -262,6 +322,8 @@ libcairo.so.2 libcairo2 #MINVER#
  cairo_user_to_device_distance@Base 1.2.4
  cairo_version@Base 1.2.4
  cairo_version_string@Base 1.2.4
+ cairo_xcb_device_debug_cap_xrender_version@Base 1.10.0
+ cairo_xcb_device_debug_cap_xshm_version@Base 1.10.0
  cairo_xcb_surface_create@Base 1.6.4-5~
  cairo_xcb_surface_create_for_bitmap@Base 1.6.4-5~
  cairo_xcb_surface_create_with_xrender_format@Base 1.6.4-5~

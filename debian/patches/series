@@ -1,3 +1,5 @@
-01_no-private-symbol-export.patch
-02_iceweasel-buggy-repeat.patch
-99_ltmain_as-needed.patch
+01_build_perf_utils.patch
+02_am-maintainer-mode.patch
+03_export-symbols.patch
+04-LD_PRELOAD-is-supported-on-Hurd.patch
+05-flto.patch
