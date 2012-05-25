@@ -1,3 +1,12 @@
+cairo (1.10.2-6.1ubuntu3) precise-proposed; urgency=low
+
+  * debian/patches/git_support_weird_pixmap_formats.patch:
+    - some users hit errors with some pixman datas, don't enforce the 
+      checking in the library but let the caller deal with those
+      (lp: #686836)
+
+ -- Sebastien Bacher <seb128@ubuntu.com>  Fri, 25 May 2012 15:23:42 +0200
+
 cairo (1.10.2-6.1ubuntu2) precise; urgency=low
 
   * debian/ltmain_as-needed.patch:

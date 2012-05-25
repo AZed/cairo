@@ -5,5 +5,5 @@
 05-flto.patch
 cairo-lp-680628.patch
 server_side_gradients.patch
+git_support_weird_pixmap_formats.patch
 
-debian-changes-1.10.2-6.1ubuntu1
