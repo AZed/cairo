@@ -99,8 +99,7 @@ am__EXEEXT_9 = a8-mask$(EXEEXT) big-trap$(EXEEXT) caps-joins$(EXEEXT) \
 	dash-zero-length$(EXEEXT) dash-state$(EXEEXT) \
 	degenerate-path$(EXEEXT) device-offset$(EXEEXT) \
 	device-offset-positive$(EXEEXT) extend-pad$(EXEEXT) \
-	extend-reflect$(EXEEXT) fill-and-stroke$(EXEEXT) \
-	fill-and-stroke-alpha$(EXEEXT) \
+	fill-and-stroke$(EXEEXT) fill-and-stroke-alpha$(EXEEXT) \
 	fill-and-stroke-alpha-add$(EXEEXT) \
 	fill-degenerate-sort-order$(EXEEXT) fill-missed-stop$(EXEEXT) \
 	fill-rule$(EXEEXT) filter-nearest-offset$(EXEEXT) \
@@ -110,12 +109,13 @@ am__EXEEXT_9 = a8-mask$(EXEEXT) big-trap$(EXEEXT) caps-joins$(EXEEXT) \
 	get-path-extents$(EXEEXT) gradient-alpha$(EXEEXT) \
 	infinite-join$(EXEEXT) in-fill-empty-trapezoid$(EXEEXT) \
 	leaky-dash$(EXEEXT) leaky-polygon$(EXEEXT) line-width$(EXEEXT) \
-	line-width-scale$(EXEEXT) linear-gradient$(EXEEXT) \
-	linear-gradient-reflect$(EXEEXT) long-lines$(EXEEXT) \
-	mask$(EXEEXT) mask-ctm$(EXEEXT) mask-surface-ctm$(EXEEXT) \
-	move-to-show-surface$(EXEEXT) new-sub-path$(EXEEXT) \
-	nil-surface$(EXEEXT) operator-clear$(EXEEXT) \
-	operator-source$(EXEEXT) paint$(EXEEXT) paint-repeat$(EXEEXT) \
+	line-width-scale$(EXEEXT) line-width-zero$(EXEEXT) \
+	linear-gradient$(EXEEXT) linear-gradient-reflect$(EXEEXT) \
+	long-lines$(EXEEXT) mask$(EXEEXT) mask-ctm$(EXEEXT) \
+	mask-surface-ctm$(EXEEXT) move-to-show-surface$(EXEEXT) \
+	new-sub-path$(EXEEXT) nil-surface$(EXEEXT) \
+	operator-clear$(EXEEXT) operator-source$(EXEEXT) \
+	paint$(EXEEXT) paint-repeat$(EXEEXT) \
 	paint-source-alpha$(EXEEXT) paint-with-alpha$(EXEEXT) \
 	pattern-get-type$(EXEEXT) pattern-getters$(EXEEXT) \
 	pixman-rotate$(EXEEXT) radial-gradient$(EXEEXT) \
@@ -126,8 +126,9 @@ am__EXEEXT_9 = a8-mask$(EXEEXT) big-trap$(EXEEXT) caps-joins$(EXEEXT) \
 	scale-source-surface-paint$(EXEEXT) select-font-face$(EXEEXT) \
 	select-font-no-show-text$(EXEEXT) self-copy$(EXEEXT) \
 	self-intersecting$(EXEEXT) set-source$(EXEEXT) \
-	show-text-current-point$(EXEEXT) source-clip$(EXEEXT) \
-	source-clip-scale$(EXEEXT) source-surface-scale-paint$(EXEEXT) \
+	show-text-current-point$(EXEEXT) skew-extreme$(EXEEXT) \
+	source-clip$(EXEEXT) source-clip-scale$(EXEEXT) \
+	source-surface-scale-paint$(EXEEXT) \
 	surface-finish-twice$(EXEEXT) surface-pattern$(EXEEXT) \
 	surface-pattern-scale-down$(EXEEXT) \
 	surface-pattern-scale-up$(EXEEXT) text-antialias-gray$(EXEEXT) \
@@ -285,10 +286,6 @@ extend_pad_SOURCES = extend-pad.c
 extend_pad_OBJECTS = extend-pad.$(OBJEXT)
 extend_pad_LDADD = $(LDADD)
 extend_pad_DEPENDENCIES = libcairotest.la $(am__DEPENDENCIES_1)
-extend_reflect_SOURCES = extend-reflect.c
-extend_reflect_OBJECTS = extend-reflect.$(OBJEXT)
-extend_reflect_LDADD = $(LDADD)
-extend_reflect_DEPENDENCIES = libcairotest.la $(am__DEPENDENCIES_1)
 fallback_resolution_SOURCES = fallback-resolution.c
 fallback_resolution_OBJECTS = fallback-resolution.$(OBJEXT)
 fallback_resolution_LDADD = $(LDADD)
@@ -417,6 +414,10 @@ line_width_scale_SOURCES = line-width-scale.c
 line_width_scale_OBJECTS = line-width-scale.$(OBJEXT)
 line_width_scale_LDADD = $(LDADD)
 line_width_scale_DEPENDENCIES = libcairotest.la $(am__DEPENDENCIES_1)
+line_width_zero_SOURCES = line-width-zero.c
+line_width_zero_OBJECTS = line-width-zero.$(OBJEXT)
+line_width_zero_LDADD = $(LDADD)
+line_width_zero_DEPENDENCIES = libcairotest.la $(am__DEPENDENCIES_1)
 linear_gradient_SOURCES = linear-gradient.c
 linear_gradient_OBJECTS = linear-gradient.$(OBJEXT)
 linear_gradient_LDADD = $(LDADD)
@@ -590,6 +591,10 @@ show_text_current_point_OBJECTS = show-text-current-point.$(OBJEXT)
 show_text_current_point_LDADD = $(LDADD)
 show_text_current_point_DEPENDENCIES = libcairotest.la \
 	$(am__DEPENDENCIES_1)
+skew_extreme_SOURCES = skew-extreme.c
+skew_extreme_OBJECTS = skew-extreme.$(OBJEXT)
+skew_extreme_LDADD = $(LDADD)
+skew_extreme_DEPENDENCIES = libcairotest.la $(am__DEPENDENCIES_1)
 source_clip_SOURCES = source-clip.c
 source_clip_OBJECTS = source-clip.$(OBJEXT)
 source_clip_LDADD = $(LDADD)
@@ -733,7 +738,7 @@ SOURCES = $(libcairotest_la_SOURCES) a8-mask.c big-trap.c \
 	dash-caps-joins.c dash-no-dash.c dash-offset-negative.c \
 	dash-scale.c dash-state.c dash-zero-length.c degenerate-path.c \
 	device-offset.c device-offset-positive.c extend-pad.c \
-	extend-reflect.c fallback-resolution.c fill-and-stroke.c \
+	fallback-resolution.c fill-and-stroke.c \
 	fill-and-stroke-alpha.c fill-and-stroke-alpha-add.c \
 	fill-degenerate-sort-order.c fill-missed-stop.c fill-rule.c \
 	filter-nearest-offset.c font-face-get-type.c \
@@ -743,19 +748,20 @@ SOURCES = $(libcairotest_la_SOURCES) a8-mask.c big-trap.c \
 	get-group-target.c get-path-extents.c glyph-cache-pressure.c \
 	gradient-alpha.c imagediff.c in-fill-empty-trapezoid.c \
 	infinite-join.c leaky-dash.c leaky-polygon.c line-width.c \
-	line-width-scale.c linear-gradient.c linear-gradient-reflect.c \
-	long-lines.c mask.c mask-ctm.c mask-surface-ctm.c \
-	move-to-show-surface.c multi-page.c new-sub-path.c \
-	nil-surface.c operator-clear.c operator-source.c paint.c \
-	paint-repeat.c paint-source-alpha.c paint-with-alpha.c \
-	pattern-get-type.c pattern-getters.c pdf-features.c pdf2png.c \
-	pixman-rotate.c png-flatten.c ps-features.c \
-	pthread-show-text.c push-group.c radial-gradient.c \
-	random-intersections.c rectangle-rounding-error.c \
-	rectilinear-stroke.c rel-path.c rotate-image-surface-paint.c \
-	scale-down-source-surface-paint.c scale-source-surface-paint.c \
-	select-font-face.c select-font-no-show-text.c self-copy.c \
-	self-intersecting.c set-source.c show-text-current-point.c \
+	line-width-scale.c line-width-zero.c linear-gradient.c \
+	linear-gradient-reflect.c long-lines.c mask.c mask-ctm.c \
+	mask-surface-ctm.c move-to-show-surface.c multi-page.c \
+	new-sub-path.c nil-surface.c operator-clear.c \
+	operator-source.c paint.c paint-repeat.c paint-source-alpha.c \
+	paint-with-alpha.c pattern-get-type.c pattern-getters.c \
+	pdf-features.c pdf2png.c pixman-rotate.c png-flatten.c \
+	ps-features.c pthread-show-text.c push-group.c \
+	radial-gradient.c random-intersections.c \
+	rectangle-rounding-error.c rectilinear-stroke.c rel-path.c \
+	rotate-image-surface-paint.c scale-down-source-surface-paint.c \
+	scale-source-surface-paint.c select-font-face.c \
+	select-font-no-show-text.c self-copy.c self-intersecting.c \
+	set-source.c show-text-current-point.c skew-extreme.c \
 	source-clip.c source-clip-scale.c source-surface-scale-paint.c \
 	surface-finish-twice.c surface-pattern.c \
 	surface-pattern-scale-down.c surface-pattern-scale-up.c \
@@ -777,7 +783,7 @@ DIST_SOURCES = $(libcairotest_la_SOURCES) a8-mask.c big-trap.c \
 	dash-caps-joins.c dash-no-dash.c dash-offset-negative.c \
 	dash-scale.c dash-state.c dash-zero-length.c degenerate-path.c \
 	device-offset.c device-offset-positive.c extend-pad.c \
-	extend-reflect.c fallback-resolution.c fill-and-stroke.c \
+	fallback-resolution.c fill-and-stroke.c \
 	fill-and-stroke-alpha.c fill-and-stroke-alpha-add.c \
 	fill-degenerate-sort-order.c fill-missed-stop.c fill-rule.c \
 	filter-nearest-offset.c font-face-get-type.c \
@@ -787,19 +793,20 @@ DIST_SOURCES = $(libcairotest_la_SOURCES) a8-mask.c big-trap.c \
 	get-group-target.c get-path-extents.c glyph-cache-pressure.c \
 	gradient-alpha.c imagediff.c in-fill-empty-trapezoid.c \
 	infinite-join.c leaky-dash.c leaky-polygon.c line-width.c \
-	line-width-scale.c linear-gradient.c linear-gradient-reflect.c \
-	long-lines.c mask.c mask-ctm.c mask-surface-ctm.c \
-	move-to-show-surface.c multi-page.c new-sub-path.c \
-	nil-surface.c operator-clear.c operator-source.c paint.c \
-	paint-repeat.c paint-source-alpha.c paint-with-alpha.c \
-	pattern-get-type.c pattern-getters.c pdf-features.c pdf2png.c \
-	pixman-rotate.c png-flatten.c ps-features.c \
-	pthread-show-text.c push-group.c radial-gradient.c \
-	random-intersections.c rectangle-rounding-error.c \
-	rectilinear-stroke.c rel-path.c rotate-image-surface-paint.c \
-	scale-down-source-surface-paint.c scale-source-surface-paint.c \
-	select-font-face.c select-font-no-show-text.c self-copy.c \
-	self-intersecting.c set-source.c show-text-current-point.c \
+	line-width-scale.c line-width-zero.c linear-gradient.c \
+	linear-gradient-reflect.c long-lines.c mask.c mask-ctm.c \
+	mask-surface-ctm.c move-to-show-surface.c multi-page.c \
+	new-sub-path.c nil-surface.c operator-clear.c \
+	operator-source.c paint.c paint-repeat.c paint-source-alpha.c \
+	paint-with-alpha.c pattern-get-type.c pattern-getters.c \
+	pdf-features.c pdf2png.c pixman-rotate.c png-flatten.c \
+	ps-features.c pthread-show-text.c push-group.c \
+	radial-gradient.c random-intersections.c \
+	rectangle-rounding-error.c rectilinear-stroke.c rel-path.c \
+	rotate-image-surface-paint.c scale-down-source-surface-paint.c \
+	scale-source-surface-paint.c select-font-face.c \
+	select-font-no-show-text.c self-copy.c self-intersecting.c \
+	set-source.c show-text-current-point.c skew-extreme.c \
 	source-clip.c source-clip-scale.c source-surface-scale-paint.c \
 	surface-finish-twice.c surface-pattern.c \
 	surface-pattern-scale-down.c surface-pattern-scale-up.c \
@@ -943,9 +950,6 @@ LTLIBOBJS = @LTLIBOBJS@
 LTP = @LTP@
 LTP_GENHTML = @LTP_GENHTML@
 LT_CURRENT_MINUS_AGE = @LT_CURRENT_MINUS_AGE@
-MAINT = @MAINT@
-MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
-MAINTAINER_MODE_TRUE = @MAINTAINER_MODE_TRUE@
 MAKEINFO = @MAKEINFO@
 MMX_CFLAGS = @MMX_CFLAGS@
 OBJEXT = @OBJEXT@
@@ -1048,31 +1052,31 @@ TESTS = a8-mask big-trap caps-joins caps-joins-alpha caps-sub-paths \
 	create-for-stream create-from-png create-from-png-stream \
 	dash-caps-joins dash-no-dash dash-offset-negative dash-scale \
 	dash-zero-length dash-state degenerate-path device-offset \
-	device-offset-positive extend-pad extend-reflect \
-	fill-and-stroke fill-and-stroke-alpha \
-	fill-and-stroke-alpha-add fill-degenerate-sort-order \
-	fill-missed-stop fill-rule filter-nearest-offset \
-	font-face-get-type font-matrix-translation \
-	glyph-cache-pressure get-and-set get-clip get-group-target \
-	get-path-extents gradient-alpha infinite-join \
-	in-fill-empty-trapezoid leaky-dash leaky-polygon line-width \
-	line-width-scale linear-gradient linear-gradient-reflect \
-	long-lines mask mask-ctm mask-surface-ctm move-to-show-surface \
-	new-sub-path nil-surface operator-clear operator-source paint \
-	paint-repeat paint-source-alpha paint-with-alpha \
-	pattern-get-type pattern-getters pixman-rotate radial-gradient \
+	device-offset-positive extend-pad fill-and-stroke \
+	fill-and-stroke-alpha fill-and-stroke-alpha-add \
+	fill-degenerate-sort-order fill-missed-stop fill-rule \
+	filter-nearest-offset font-face-get-type \
+	font-matrix-translation glyph-cache-pressure get-and-set \
+	get-clip get-group-target get-path-extents gradient-alpha \
+	infinite-join in-fill-empty-trapezoid leaky-dash leaky-polygon \
+	line-width line-width-scale line-width-zero linear-gradient \
+	linear-gradient-reflect long-lines mask mask-ctm \
+	mask-surface-ctm move-to-show-surface new-sub-path nil-surface \
+	operator-clear operator-source paint paint-repeat \
+	paint-source-alpha paint-with-alpha pattern-get-type \
+	pattern-getters pixman-rotate radial-gradient \
 	random-intersections rectangle-rounding-error \
 	rectilinear-stroke rotate-image-surface-paint \
 	scale-down-source-surface-paint scale-source-surface-paint \
 	select-font-face select-font-no-show-text self-copy \
 	self-intersecting set-source show-text-current-point \
-	source-clip source-clip-scale source-surface-scale-paint \
-	surface-finish-twice surface-pattern \
-	surface-pattern-scale-down surface-pattern-scale-up \
-	text-antialias-gray text-antialias-none \
-	text-antialias-subpixel text-cache-crash text-glyph-range \
-	text-pattern text-rotate text-zero-len transforms \
-	translate-show-surface trap-clip truetype-tables \
+	skew-extreme source-clip source-clip-scale \
+	source-surface-scale-paint surface-finish-twice \
+	surface-pattern surface-pattern-scale-down \
+	surface-pattern-scale-up text-antialias-gray \
+	text-antialias-none text-antialias-subpixel text-cache-crash \
+	text-glyph-range text-pattern text-rotate text-zero-len \
+	transforms translate-show-surface trap-clip truetype-tables \
 	unantialiased-shapes unbounded-operator user-data rel-path \
 	push-group zero-alpha $(am__append_1) $(am__append_2) \
 	$(am__append_3) $(am__append_4) $(am__append_5) \
@@ -1268,6 +1272,7 @@ REFERENCE_IMAGES = \
 	set-source-svg-argb32-ref.png	\
 	show-glyphs-many-ref.png	\
 	show-text-current-point-ref.png	\
+	skew-extreme-ref.png \
 	source-clip-ref.png	\
 	source-clip-scale-quartz-ref.png	\
 	source-clip-scale-ref.png	\
@@ -1335,7 +1340,6 @@ extend-pad			\
 filter-nearest-offset		\
 ft-text-vertical-layout-type1	\
 long-lines			\
-radial-gradient			\
 self-intersecting		\
 surface-pattern			\
 surface-pattern-scale-down	\
@@ -1418,7 +1422,7 @@ all: all-recursive
 
 .SUFFIXES:
 .SUFFIXES: .c .lo .o .obj
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -1443,9 +1447,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
+$(top_srcdir)/configure:  $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
+$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 libcairotest.la: $(libcairotest_la_OBJECTS) $(libcairotest_la_DEPENDENCIES) 
 	$(LINK)  $(libcairotest_la_LDFLAGS) $(libcairotest_la_OBJECTS) $(libcairotest_la_LIBADD) $(LIBS)
@@ -1542,9 +1546,6 @@ device-offset-positive$(EXEEXT): $(device_offset_positive_OBJECTS) $(device_offs
 extend-pad$(EXEEXT): $(extend_pad_OBJECTS) $(extend_pad_DEPENDENCIES) 
 	@rm -f extend-pad$(EXEEXT)
 	$(LINK) $(extend_pad_LDFLAGS) $(extend_pad_OBJECTS) $(extend_pad_LDADD) $(LIBS)
-extend-reflect$(EXEEXT): $(extend_reflect_OBJECTS) $(extend_reflect_DEPENDENCIES) 
-	@rm -f extend-reflect$(EXEEXT)
-	$(LINK) $(extend_reflect_LDFLAGS) $(extend_reflect_OBJECTS) $(extend_reflect_LDADD) $(LIBS)
 fallback-resolution$(EXEEXT): $(fallback_resolution_OBJECTS) $(fallback_resolution_DEPENDENCIES) 
 	@rm -f fallback-resolution$(EXEEXT)
 	$(LINK) $(fallback_resolution_LDFLAGS) $(fallback_resolution_OBJECTS) $(fallback_resolution_LDADD) $(LIBS)
@@ -1626,6 +1627,9 @@ line-width$(EXEEXT): $(line_width_OBJECTS) $(line_width_DEPENDENCIES)
 line-width-scale$(EXEEXT): $(line_width_scale_OBJECTS) $(line_width_scale_DEPENDENCIES) 
 	@rm -f line-width-scale$(EXEEXT)
 	$(LINK) $(line_width_scale_LDFLAGS) $(line_width_scale_OBJECTS) $(line_width_scale_LDADD) $(LIBS)
+line-width-zero$(EXEEXT): $(line_width_zero_OBJECTS) $(line_width_zero_DEPENDENCIES) 
+	@rm -f line-width-zero$(EXEEXT)
+	$(LINK) $(line_width_zero_LDFLAGS) $(line_width_zero_OBJECTS) $(line_width_zero_LDADD) $(LIBS)
 linear-gradient$(EXEEXT): $(linear_gradient_OBJECTS) $(linear_gradient_DEPENDENCIES) 
 	@rm -f linear-gradient$(EXEEXT)
 	$(LINK) $(linear_gradient_LDFLAGS) $(linear_gradient_OBJECTS) $(linear_gradient_LDADD) $(LIBS)
@@ -1743,6 +1747,9 @@ set-source$(EXEEXT): $(set_source_OBJECTS) $(set_source_DEPENDENCIES)
 show-text-current-point$(EXEEXT): $(show_text_current_point_OBJECTS) $(show_text_current_point_DEPENDENCIES) 
 	@rm -f show-text-current-point$(EXEEXT)
 	$(LINK) $(show_text_current_point_LDFLAGS) $(show_text_current_point_OBJECTS) $(show_text_current_point_LDADD) $(LIBS)
+skew-extreme$(EXEEXT): $(skew_extreme_OBJECTS) $(skew_extreme_DEPENDENCIES) 
+	@rm -f skew-extreme$(EXEEXT)
+	$(LINK) $(skew_extreme_LDFLAGS) $(skew_extreme_OBJECTS) $(skew_extreme_LDADD) $(LIBS)
 source-clip$(EXEEXT): $(source_clip_OBJECTS) $(source_clip_DEPENDENCIES) 
 	@rm -f source-clip$(EXEEXT)
 	$(LINK) $(source_clip_LDFLAGS) $(source_clip_OBJECTS) $(source_clip_LDADD) $(LIBS)
@@ -1864,7 +1871,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/device-offset-positive.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/device-offset.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/extend-pad.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/extend-reflect.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fallback-resolution.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fill-and-stroke-alpha-add.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fill-and-stroke-alpha.Po@am__quote@
@@ -1891,6 +1897,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/leaky-dash.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/leaky-polygon.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/line-width-scale.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/line-width-zero.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/line-width.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/linear-gradient-reflect.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/linear-gradient.Po@am__quote@
@@ -1931,6 +1938,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/self-intersecting.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/set-source.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/show-text-current-point.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/skew-extreme.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/source-clip-scale.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/source-clip.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/source-surface-scale-paint.Po@am__quote@
@@ -2366,6 +2374,9 @@ $(top_builddir)/boilerplate/libcairoboilerplate.la:
 
 $(top_builddir)/src/libcairo.la:
 	cd $(top_builddir)/src && $(MAKE) $(AM_MAKEFLAGS) libcairo.la
+
+$(top_builddir)/test/pdiff/libpdiff.la:
+	cd $(top_builddir)/test/pdiff && $(MAKE) $(AM_MAKEFLAGS) libpdiff.la
 
 # some systems cannot handle all of our clean files together
 clean-local:

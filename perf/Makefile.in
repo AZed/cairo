@@ -221,9 +221,6 @@ LTLIBOBJS = @LTLIBOBJS@
 LTP = @LTP@
 LTP_GENHTML = @LTP_GENHTML@
 LT_CURRENT_MINUS_AGE = @LT_CURRENT_MINUS_AGE@
-MAINT = @MAINT@
-MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
-MAINTAINER_MODE_TRUE = @MAINTAINER_MODE_TRUE@
 MAKEINFO = @MAKEINFO@
 MMX_CFLAGS = @MMX_CFLAGS@
 OBJEXT = @OBJEXT@
@@ -342,11 +339,24 @@ cairo_perf_diff_files_SOURCES = \
 LDADD = $(top_builddir)/boilerplate/libcairoboilerplate.la \
 	$(top_builddir)/src/libcairo.la
 
+EXTRA_VG_FLAGS = $(CAIRO_EXTRA_VALGRIND_FLAGS)
+VG_MEMCHECK_FLAGS = \
+	--tool=memcheck \
+	--suppressions=$(top_srcdir)/test/.valgrind-suppressions \
+	--leak-check=yes --show-reachable=yes
+
+VG_CALLGRIND_FLAGS = \
+	--tool=callgrind
+
+CLEANFILES = \
+	valgrind-log \
+	index.html
+
 all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .lo .o .obj
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -371,9 +381,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
+$(top_srcdir)/configure:  $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
+$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
 clean-noinstPROGRAMS:
@@ -543,6 +553,7 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
@@ -564,8 +575,6 @@ distclean-am: clean-am distclean-compile distclean-generic \
 dvi: dvi-am
 
 dvi-am:
-
-html: html-am
 
 info: info-am
 
@@ -623,7 +632,23 @@ $(top_builddir)/src/libcairo.la:
 perf: cairo-perf FORCE
 	./cairo-perf
 
+html: index.html
+
+index.html: cairo-perf
+	./cairo-perf-diff -h HEAD > $@
+
+perf-valgrind: cairo-perf FORCE
+	$(top_srcdir)/libtool --mode=execute \
+		valgrind $(VG_MEMCHECK_FLAGS) $(EXTRA_VG_FLAGS) \
+		./cairo-perf 2>&1 | tee valgrind-log
+perf-callgrind: cairo-perf FORCE
+	$(top_srcdir)/libtool --mode=execute \
+		valgrind $(VG_CALLGRIND_FLAGS) $(EXTRA_VG_FLAGS) \
+		./cairo-perf
+
 FORCE:
+
+.PHONY: perf perf-valgrind perf-callgrind FORCE
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

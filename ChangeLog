@@ -1,3 +1,1207 @@
+commit aba2b299db163d8a5b9d0a0214cd8a485fb87162
+Author: Carl Worth <cworth@cworth.org>
+Date:   Mon Mar 19 23:50:13 2007 -0700
+
+    boilerplate: Add EXTRA_LTLIBRARIES to CLEANFILES to allow make distcleancheck to pass.
+
+ boilerplate/Makefile.am |    4 +++-
+ 1 files changed, 3 insertions(+), 1 deletions(-)
+
+commit 2483542b74ac71851cc766de3468d0df833cdec2
+Author: Carl Worth <cworth@cworth.org>
+Date:   Mon Mar 19 23:37:28 2007 -0700
+
+    Add skew-extreme-ref.png to the tar file for the release.
+
+ test/Makefile.am |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+commit b91ff39214675faea5d3627ecf86a24aeb8b178f
+Author: Carl Worth <cworth@cworth.org>
+Date:   Mon Mar 19 23:24:26 2007 -0700
+
+    Increment cairo version to 1.4.2 (and libtool versioning to 13:1:11)
+
+ configure.in |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 04b3de48f5269cae483b4af425402679a35e7d33
+Author: Carl Worth <cworth@cworth.org>
+Date:   Mon Mar 19 23:22:39 2007 -0700
+
+    NEWS: Add notes for cairo 1.4.2
+
+ NEWS |  130 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 130 insertions(+), 0 deletions(-)
+
+commit 1401f20eb91f34d992612162db0c9e04bd666114
+Author: Carl Worth <cworth@cworth.org>
+Date:   Mon Mar 19 22:39:40 2007 -0700
+
+    Temporarily remove extend-reflect from the list of tests.
+    
+    This test is known to sometimes cause an X server to enter a near-
+    infinite loop. That's a reall unkind thing to inflict upon our
+    users who are being nice enough to test cairo. Let's disable
+    this test for the 1.4.2 release.
+
+ test/Makefile.am |    1 -
+ 1 files changed, 0 insertions(+), 1 deletions(-)
+
+commit 725a4de42dfaf0d9d98447c9fbefed99fbf99ac1
+Author: Carl Worth <cworth@cworth.org>
+Date:   Mon Mar 19 16:50:55 2007 -0700
+
+    Propagate a nil surface out of _cairo_surface_create_similar_scratch
+    
+    We detect an error in the surface before calling into private surface-modifying
+    functions, (such as _cairo_surface_set_font_options), that don't have the
+    nil-surface protection of public functions.
+    
+    This should fix the problem reported (again) in this bug report:
+    
+    	cairo crashes in cairo_create_simular if nil surface returned by other->backend->create_similar
+    	https://bugs.freedesktop.org/show_bug.cgi?id=9844
+    
+    Though I haven't succeeded in replicating the bug yet, (perhaps a system
+    difference in allowing writes to read-only memory or not, or something
+    like that).
+
+ src/cairo-surface.c |    4 ++++
+ 1 files changed, 4 insertions(+), 0 deletions(-)
+
+commit eb472a9d9cbaea754907a261b459693b9c27ac79
+Author: Carl Worth <cworth@cworth.org>
+Date:   Mon Mar 19 13:13:41 2007 -0700
+
+    xlib: Prefer surface->format over surface->visual for identifying masks
+    
+    The original test for 'if (surface->visual)' dates back to a very old
+    assumption that if the xlib surface was created with an XRenderFormat
+    that the surface->visual field would be set to NULL. This assumption
+    was broken years ago with the following commit:
+    
+    	0c05b23b3165ec6908c28f56b3446cf43dff44a2
+    
+    This fixes the crash reported here:
+    
+    	BadMatch when running gnome-terminal with the murrine-0.51 gtk engine
+    	https://bugs.freedesktop.org/show_bug.cgi?id=10250
+
+ src/cairo-xlib-surface.c |   27 +++++++++++++++------------
+ 1 files changed, 15 insertions(+), 12 deletions(-)
+
+commit d27c42cc3fcd4376fc69aa68d997e6077c3eca90
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Mon Mar 19 17:42:06 2007 -0400
+
+    [boilerplate] Don't build in make all
+
+ boilerplate/Makefile.am |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 12feb1f98627637bf83ba70f739bb5b2699085aa
+Author: Brian Ewins <Brian.Ewins@gmail.com>
+Date:   Mon Mar 19 18:22:44 2007 +0000
+
+    [quartz] apply ctm to text (#9568)
+    
+    Applies the ctm to text output on the quartz surface. This corrects
+    the text-pattern test, and also corrects the size of text when the
+    ctm includes a scale.
+
+ src/cairo-quartz-surface.c |    9 ++++++++-
+ 1 files changed, 8 insertions(+), 1 deletions(-)
+
+commit 986b0ff83813b68a19490fe8629bfdaeed68cbe2
+Author: Brian Ewins <Brian.Ewins@gmail.com>
+Date:   Mon Mar 19 18:21:27 2007 +0000
+
+    [atsui] make text_to_glyphs return positions in user units. (#9568)
+    
+    text_to_glyphs was returning positions in device units; correct this
+    to use user units.
+
+ src/cairo-atsui-font.c |   14 +++++++++++++-
+ 1 files changed, 13 insertions(+), 1 deletions(-)
+
+commit 06a44839270354c7f74aa66352fb4234095dee4e
+Author: Brian Ewins <Brian.Ewins@gmail.com>
+Date:   Sun Mar 18 20:20:11 2007 +0000
+
+    [atsui] store sizes in the atsui font
+    
+    The ATSUStyle that we store in the font contains references to
+    the size and font matrix; we need to store them in the font so that
+    they are not released before the style.
+
+ src/cairo-atsui-font.c |   16 +++++++++-------
+ 1 files changed, 9 insertions(+), 7 deletions(-)
+
+commit 240479d10d3263719b0c8a4426fda088899551a2
+Author: Brian Ewins <Brian.Ewins@gmail.com>
+Date:   Sun Mar 18 20:20:10 2007 +0000
+
+    [atsui] refactor CreateSizedCopyOfStyle
+    
+    This is just to make it easier to use with passed-in matrices,
+    which I'll make use of in a subsequent patch.
+
+ src/cairo-atsui-font.c |   36 ++++++++++++++++++++----------------
+ 1 files changed, 20 insertions(+), 16 deletions(-)
+
+commit 43577e26b4c2285499ebfddba6cfa62cbbb15feb
+Author: Brian Ewins <Brian.Ewins@gmail.com>
+Date:   Sun Mar 18 20:20:10 2007 +0000
+
+    [atsui] remove the unused old_show_glyphs function.
+    
+    _cairo_atsui_old_show_glyphs was a relic of the old quartz
+    surface and is no longer required.
+
+ src/cairo-atsui-font.c |  180 ++++--------------------------------------------
+ 1 files changed, 15 insertions(+), 165 deletions(-)
+
+commit 5aaf584bf44d762af5e486f21a037eb0cc6e1197
+Author: Carl Worth <cworth@cworth.org>
+Date:   Fri Mar 16 17:45:31 2007 -0700
+
+    XCB: Fix parameter-order confusion with xcb_create_pixmap
+    
+    This fixes mask-based clipping with the XCB backend, (which also makes
+    the xcb backend pass all tests that the xlib backend passes).
+
+ src/cairo-xcb-surface.c |    7 +++----
+ 1 files changed, 3 insertions(+), 4 deletions(-)
+
+commit 6f96a5dd9954418b252ec45752dcf2c3b289fed4
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Fri Mar 16 18:21:36 2007 -0400
+
+    [win32] Really return unhinted font metrics if metrics hinting is off
+
+ src/cairo-win32-font.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 47e71eef5f903fa1a96d82a79a75d89c52032913
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Fri Mar 16 17:56:53 2007 -0400
+
+    [win32] Fix font descent computation
+
+ src/cairo-win32-font.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit dd4601b0d03bba021b11dcf96e09584f40d1621f
+Author: Mathias Hasselmann <mathias.hasselmann@gmx.de>
+Date:   Fri Mar 16 20:43:29 2007 +0100
+
+    [cairo-perf] Emit warning, if cairo-perf is not CPU bound
+    
+    	cairo-perf and the X server should be bound to CPUs (either the same
+    	or separate) on SMP systems. Not doing so causes random results when
+    	the X server is moved to or from cairo-perf's CPU during the
+    	benchmarks.
+
+ configure.in      |   11 +++++++++++
+ perf/cairo-perf.c |   52 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 63 insertions(+), 0 deletions(-)
+
+commit d02aa5b23eb6243b21697de203db0a5f1b49def9
+Author: Gilles Dauphin <dauphin@enst.fr>
+Date:   Fri Mar 16 10:35:23 2007 -0700
+
+    Don't use unsupported visibily attribute hidden on Solaris
+    
+    Thanks to Thomas Klausner for passing the report along.
+    This fixes the following bug report:
+    
+    	hidden attribute does not work with Solaris ld
+    	https://bugs.freedesktop.org/show_bug.cgi?id=10227
+    
+    And as Behdad points out, an even better fix would be to
+    move checks for supported visibility attribute to configure.
+
+ pixman/src/pixman.h |    2 +-
+ src/cairoint.h      |    4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+commit 8236282c5d58320173b17659e488384e710d0ea7
+Author: Thomas Klausner <wiz@danbala.tuwien.ac.at>
+Date:   Fri Mar 16 10:04:56 2007 -0700
+
+    Use "find !" rather than "find -not" for better portability
+    
+    The man page for GNU find says:
+           -not expr
+                  Same as ! expr, but not POSIX compliant.
+    
+    And actually, on e.g. NetBSD, "-not" is not supported.
+    
+    This resolved the following bug:
+    
+    	https://bugs.freedesktop.org/show_bug.cgi?id=10226
+
+ RELEASING            |    2 +-
+ src/check-headers.sh |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 332c38b6c34bde4829607e534f39522f8001acf7
+Author: Carl Worth <cworth@cworth.org>
+Date:   Thu Mar 15 23:25:06 2007 -0700
+
+    Avoid pulling in -lz for the ps backend.
+    
+    Quite some time ago we switched from using deflate-based compression to LZW
+    for the ps backend, (which allows it to target PostScript Level 2 instead of
+    PostScript Level 3). Now, we finally drop the fact that the ps backend was
+    still requiring zlib in order to build.
+
+ configure.in |    6 +-----
+ 1 files changed, 1 insertions(+), 5 deletions(-)
+
+commit 2242550b489472d4d9b6505fd3db89541e101425
+Author: Carl Worth <cworth@cworth.org>
+Date:   Thu Mar 15 23:17:19 2007 -0700
+
+    Make compilation of cairo-deflate-stream.c conditional on compilation of PDF backend.
+    
+    Otherwise we risk pulling in an otherwise-unneeded dependency on zlib.
+    
+    This fixes the bug reported here:
+    
+    	Without PDF surface backend we don't need cairo-deflate-stream
+    	https://bugs.freedesktop.org/show_bug.cgi?id=10202
+
+ src/Makefile.am |    3 +--
+ 1 files changed, 1 insertions(+), 2 deletions(-)
+
+commit 1234064fa4aa20d0875473709d2fa74600af485b
+Author: Carl Worth <cworth@cworth.org>
+Date:   Thu Mar 15 22:38:42 2007 -0700
+
+    Allow NULL pointers for functions that accept pointers for multiple return values.
+    
+    When a single function accepts pointers for multiple return values,
+    the convention is that it's legal for the user to pass NULL for
+    those pointers in case the user is only interested in some subset
+    of the values.
+    
+    This was already properly implemented for functions such as
+    cairo_pattern_get_rgba, etc.
+    
+    Here we fix four functions to follow the same convention:
+    
+    	cairo_stroke_extents
+    	cairo_fill_extents
+    	cairo_clip_extents
+    	cairo_surface_get_device_offset
+
+ src/cairo-gstate.c  |   44 +++++++++++++++++++++++++++++++++-----------
+ src/cairo-surface.c |    6 ++++--
+ 2 files changed, 37 insertions(+), 13 deletions(-)
+
+commit 133183d858aa632da3cec2a789dcc1e1203d778b
+Author: Carl Worth <cworth@cworth.org>
+Date:   Thu Mar 15 22:08:55 2007 -0700
+
+    Fix cairo_stroke_extents and cairo_in_stroke to not crash with line width of 0.0
+    
+    This fixes the line-width-zero test case and the bug reported here:
+    
+    	Crash in cairo_stroke_extents whe line width is 0 and line cap is ROUND
+    	(_cairo_pen_find_active_cw_vertex_index)
+    	https://bugs.freedesktop.org/show_bug.cgi?id=10231
+
+ src/cairo-gstate.c |   10 ++++++++++
+ 1 files changed, 10 insertions(+), 0 deletions(-)
+
+commit 23caa0f43ba199371ab178cf3e827e449ee5935f
+Author: Carl Worth <cworth@cworth.org>
+Date:   Thu Mar 15 21:58:20 2007 -0700
+
+    Add line-width-zero test which currently crashes.
+    
+    The crash is described in this bug report:
+    
+    	Crash in cairo_stroke_extents whe line width is 0 and line cap is ROUND
+    	(_cairo_pen_find_active_cw_vertex_index)
+    	https://bugs.freedesktop.org/show_bug.cgi?id=10231
+
+ test/.gitignore        |    1 +
+ test/Makefile.am       |    1 +
+ test/line-width-zero.c |   79 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 81 insertions(+), 0 deletions(-)
+
+commit 562bd551bc5ca3f3858a66b9884a8525531153c8
+Author: Mathias Hasselmann <mathias.hasselmann@gmx.de>
+Date:   Thu Mar 15 12:47:41 2007 +0100
+
+    [cairo-perf-diff] Update usage screen to mention --html.
+
+ perf/cairo-perf-diff |   73 ++++++++++++++++++++++++++++---------------------
+ 1 files changed, 42 insertions(+), 31 deletions(-)
+
+commit 6ff2439b33a9da9a517325bfd472e8cb1fdd4992
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Mar 14 16:33:01 2007 -0700
+
+    Implement _cairo_traps_tessellate_triangle with _cairo_traps_tessellate_convex_quad
+    
+    The newly rewritten convex_quad code is actually simpler than the
+    triangle code being replaced here. This also allows us to throw
+    away the problematic _compute_x function which can't handle
+    horizontal lines, (divide by zero). So the cairo world becomes a
+    better place.
+
+ src/cairo-traps.c |   89 +++++-----------------------------------------------
+ 1 files changed, 9 insertions(+), 80 deletions(-)
+
+commit 53ae6ea957bac141c033f41276d93bab3a25009f
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Mar 14 16:30:48 2007 -0700
+
+    Fix _cairo_traps_tessellate_convex_quad to handle a == b
+    
+    This case was found in an attempt to use the convex_quad function
+    for tessellating triangles as well. Fortunately the fix is very
+    easy.
+
+ src/cairo-traps.c |   14 +++++++++++++-
+ 1 files changed, 13 insertions(+), 1 deletions(-)
+
+commit 96d8f58daf279238d3a1dfcd4ed3710014e2aeea
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Tue Mar 13 20:17:22 2007 +0000
+
+    Clear the XRender data on display closure.
+    
+    Use the new hook functions to register a callback for xlib to clear
+    the private glyph data when the display is closed. In order to do this
+    we need to reset the glyph cache inside the generic scaled font as well.
+
+ src/cairo-xlib-surface.c |   25 +++++++++++++++++++++++++
+ 1 files changed, 25 insertions(+), 0 deletions(-)
+
+commit 52405533b1b191ff98ef3cbc20eaf55e97c8049c
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Tue Mar 13 20:42:09 2007 +0000
+
+    Privately export a function to reset the scaled font's glyph caches.
+
+ src/cairo-scaled-font.c |    9 +++++++++
+ src/cairoint.h          |    3 +++
+ 2 files changed, 12 insertions(+), 0 deletions(-)
+
+commit ad7698feb5f818ba2657b01bbc04f7fb537c1297
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Tue Mar 13 20:11:49 2007 +0000
+
+    Introduce hooks for _cairo_xlib_close_display()
+    
+    This patch adds a simple hook data type for a notifier style callback
+    and introduces two functions to manipulate a list of callbacks for
+    cleaning up on display closure.
+
+ src/cairo-xlib-private.h |   15 +++++
+ src/cairo-xlib-screen.c  |  153 ++++++++++++++++++++++++++++++++++++----------
+ 2 files changed, 136 insertions(+), 32 deletions(-)
+
+commit 3d3173d176bc959682a35674c31d3155e8642c41
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Mar 14 16:56:45 2007 -0700
+
+    Add svg-specific reference image for radial-gradient test.
+    
+    This isn't strictly needed, (pdiff allows the test to pass without the
+    image), but it sure runs faster this way.
+
+ test/radial-gradient-svg-ref.png |  Bin
+ 1 files changed, 0 insertions(+), 0 deletions(-)
+
+commit 75201c12be74055d6209d48d1d698797665a70b4
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Mar 14 15:48:15 2007 -0700
+
+    check-def.sh: Adjust test to exempt _cairo_test_* functions as well as _cairo_*_test_*
+    
+    This test started failing with the recent renaming of the following
+    three functions, (before they had no cairo in their names so they
+    were not getting picked up at all):
+    
+    _cairo_test_fallback_surface_create
+    _cairo_test_meta_surface_create
+    _cairo_test_paginated_surface_create_for_data
+    
+    With this change, the failure now goes away again.
+
+ src/check-def.sh |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 5d23d0c90c31b233d5916c12eaf2a1dafc441243
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Mar 14 15:23:01 2007 -0700
+
+    Remove dead-code remnants of old tessellator
+
+ src/cairo-traps.c |  372 -----------------------------------------------------
+ 1 files changed, 0 insertions(+), 372 deletions(-)
+
+commit 1f3a5b4e1283cc0e55f7ea6baca6d0fe67fd14b1
+Author: Carl Worth <cworth@cworth.org>
+Date:   Tue Mar 13 17:42:39 2007 -0700
+
+    Fix bugs in _cairo_traps_tessellate_convex_quad
+    
+    The previous code was not handling all cases correctly, (yes,
+    even something as simple as a quadrilateral can exhibit a
+    remarkably large number of different cases when tessellation
+    is attempted).
+    
+    This fix now introduces slope comparison which handles several
+    cases that were mis-handled with the previous implementation which
+    only used independent sorting of the X and Y values of the
+    coordinates.
+    
+    This fixes the skew-extreme test case and the bug reported here:
+    
+    	Skew transforms were broken by the cairo update in December
+    	https://bugzilla.mozilla.org/show_bug.cgi?id=373632
+
+ src/cairo-traps.c |  101 +++++++++++++++++++++++++++++++----------------------
+ 1 files changed, 59 insertions(+), 42 deletions(-)
+
+commit 0a6ae06c35d99e5e8397c58ee94291e7ee45eb4e
+Author: Carl Worth <cworth@cworth.org>
+Date:   Tue Mar 13 17:39:48 2007 -0700
+
+    Add new skew-extreme test case.
+    
+    This test currently fails, demonstrating the bug reported here:
+    
+    	Skew transforms were broken by the cairo update in December
+    	https://bugzilla.mozilla.org/show_bug.cgi?id=373632
+
+ test/.gitignore           |    1 +
+ test/Makefile.am          |    1 +
+ test/skew-extreme-ref.png |  Bin
+ test/skew-extreme.c       |  126 +++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 128 insertions(+), 0 deletions(-)
+
+commit 40b6d8842e1bcb5fbb3a7dffd0c05b7d3bf6cc6b
+Author: Carl Worth <cworth@cworth.org>
+Date:   Tue Mar 13 13:07:42 2007 -0700
+
+    Remove radial-gradient test from XFAIL list
+    
+    This test has not been failing since the fix in:
+    
+    	772edc9133d41dfd667ae5915dfa6ace0bcbfd0d
+    
+    So get rid of the '1 unexpected passes' complaint.
+
+ test/Makefile.am       |    1 -
+ test/radial-gradient.c |    3 +--
+ 2 files changed, 1 insertions(+), 3 deletions(-)
+
+commit e803e2e69ba02a1db316c97eb9a8d386709380e2
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Wed Mar 14 17:23:57 2007 -0400
+
+    [cairo-pattern] Add a cache of two color stops to cairo_gradient_pattern_t
+    
+    Most of gradients have only two color stops.  This avoids
+    calling malloc() for those cases.
+
+ src/cairo-pattern.c |   25 +++++++++++++++++++++----
+ src/cairoint.h      |    1 +
+ 2 files changed, 22 insertions(+), 4 deletions(-)
+
+commit 4514fdca1ba0f3922c2797744f4b0d42d37f8b42
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Tue Mar 13 20:49:52 2007 -0400
+
+    [cairo-pattern] Grow color-stops array exponentially
+
+ src/cairo-pattern.c |   61 ++++++++++++++++++++++++++++++++++++---------------
+ src/cairoint.h      |    3 +-
+ 2 files changed, 45 insertions(+), 19 deletions(-)
+
+commit e878f2259b2512f0411d698bf078fe91b7373246
+Author: Mathias Hasselmann <mathias.hasselmann@gmx.de>
+Date:   Wed Mar 14 11:42:41 2007 +0100
+
+    Include pixman/src in cairo-perf hash
+
+ perf/cairo-perf-diff |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+commit 1a3f5df5ff4a80bb199e296491e3a5c9887fd4f7
+Author: Mathias Hasselmann <mathias.hasselmann@gmx.de>
+Date:   Wed Mar 14 21:42:50 2007 +0100
+
+    Add index.html to .gitignore
+
+ perf/.gitignore |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+commit c40be43aef735deba7605fde14300b7810701011
+Author: Mathias Hasselmann <mathias.hasselmann@gmx.de>
+Date:   Wed Mar 14 21:41:40 2007 +0100
+
+    Transform the output of cairo-perf-diff into HTML
+
+ perf/Makefile.am     |    8 ++++-
+ perf/cairo-perf-diff |   20 ++++++++---
+ perf/make-html.py    |   89 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 111 insertions(+), 6 deletions(-)
+
+commit f1dd48475a34a038ebdb6426b04fc3728a0f0782
+Author: Mathias Hasselmann <mathias.hasselmann@gmx.de>
+Date:   Wed Mar 14 21:18:09 2007 +0100
+
+    Improve CPU utilization when building cairo-perf
+
+ perf/cairo-perf-diff |   11 +++++++++++
+ 1 files changed, 11 insertions(+), 0 deletions(-)
+
+commit a7595c1295ba1a58b452b1df31d02776e5c17c0f
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Tue Mar 13 17:21:19 2007 -0400
+
+    [Makefile.am] Do not distribute cairo-features.h, Ouch!
+    
+    We were accidentally doing that by not marking it noinst.
+    Moreover, no need to mark it as BUILD_SOURCES, since it's
+    created by configure, not make.
+
+ src/Makefile.am |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit f3c8d82d6d6a759364c4228d9b0badf846debcea
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Tue Mar 13 16:51:34 2007 -0400
+
+    [test] If backends are limited and all untested, pass the test
+    This is necessary to ensure that limiting backends using
+    CAIRO_TEST_TARGET does not increase the number of tests failing,
+    which is a desirable invariant.
+
+ test/cairo-test.c |   44 +++++++++++++++++++++++++++++---------------
+ 1 files changed, 29 insertions(+), 15 deletions(-)
+
+commit 30b5f1baa8cbd01ac0a3ff376e294775b600b4e4
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Tue Mar 13 16:50:10 2007 -0400
+
+    [test] In pattern-getters test, log what went wrong
+
+ test/pattern-getters.c |   14 +++++++++++---
+ 1 files changed, 11 insertions(+), 3 deletions(-)
+
+commit 9267cb042418250614db83bd3b2dcb0e7615af79
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Tue Mar 13 16:49:42 2007 -0400
+
+    [cairo-pattern] Use _cairo_color_double_to_short() to fix color conversion
+
+ src/cairo-pattern.c |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
+
+commit 60502ba3481ea751df6f379e1c38850172826695
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Tue Mar 13 16:13:35 2007 -0400
+
+    [cairo-color] Add cairo-private _cairo_color_double_to_short()
+
+ src/cairo-color.c |   11 ++++++-----
+ src/cairoint.h    |    3 +++
+ 2 files changed, 9 insertions(+), 5 deletions(-)
+
+commit 956fdfbb62ac82da1e6fbd467c50e449ec621937
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Tue Mar 13 06:30:11 2007 -0400
+
+    [cairo-pattern] Fix color conversion from short to double
+    We should divide by 65535.0, not 65536.0.
+
+ src/cairo-pattern.c |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
+
+commit 20304908626f0af40aeda145b2967a40151728c5
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Tue Mar 13 06:20:21 2007 -0400
+
+    [cairo-pattern] Add XXX note
+
+ src/cairo-pattern.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+commit deed0f473400bc2e91dde8bad2537d499a5941ea
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Tue Mar 13 06:09:09 2007 -0400
+
+    [polygon,spline,traps] Avoid free(NULL)
+
+ src/cairo-polygon.c |    2 +-
+ src/cairo-spline.c  |    2 +-
+ src/cairo-traps.c   |    2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+commit b706bd9b38d505d2b09e932a8f362fac76ef64de
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Tue Mar 13 06:07:03 2007 -0400
+
+    [cairo-polygon] Add a cache of eight edges to cairo_polygon_t
+    
+    Many, if not most, of polygons have very few edges.  This avoids
+    calling malloc() for those cases.
+
+ src/cairo-polygon.c |   30 +++++++++++++++++++++++-------
+ src/cairoint.h      |    1 +
+ 2 files changed, 24 insertions(+), 7 deletions(-)
+
+commit d8165d5424718404946c3a72d59396fc604d1bce
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Tue Mar 13 05:59:33 2007 -0400
+
+    [cairo-spline] Fix typo in comment
+
+ src/cairo-spline.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit cca7e3fec3a3ec68f812690aa7efafa7dc237849
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Tue Mar 13 05:56:38 2007 -0400
+
+    [cairo_polygon_t] Change has_current_point from int to cairo_bool_t
+
+ src/cairo-polygon.c |    8 ++++----
+ src/cairoint.h      |    2 +-
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+commit 81e15a454b188aa8dd03eb599d0fb4af834695f1
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Tue Mar 13 05:55:45 2007 -0400
+
+    [cairo_polygon_t] Remove unused member 'closed'
+
+ src/cairoint.h |    2 --
+ 1 files changed, 0 insertions(+), 2 deletions(-)
+
+commit 2bf4ce389d05e07698e03374c3d05436f5d2b2e4
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Tue Mar 13 05:53:13 2007 -0400
+
+    [cairo_polygon_t] Reorder struct members for clarity
+
+ src/cairoint.h |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
+
+commit 3ce84390de8be69f369a4da80c3039b716ebb0e4
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Tue Mar 13 05:51:39 2007 -0400
+
+    [cairo-polygon] Clean-up realloc algorithm for clarity
+
+ src/cairo-polygon.c |   18 +++++++-----------
+ 1 files changed, 7 insertions(+), 11 deletions(-)
+
+commit 6976ab1392e0fd07a081e6d6056510070e1d6df9
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Fri Mar 9 16:23:35 2007 -0500
+
+    [cairo-slope] Make comparison stable if both vectors are zero
+
+ src/cairo-slope.c |    8 +++++++-
+ 1 files changed, 7 insertions(+), 1 deletions(-)
+
+commit 9eee167210b6cc562014652572872cf0a7ccb00e
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Thu Mar 8 22:34:44 2007 -0500
+
+    [cairo-spline] Add a cache of eight points to cairo_spline_t
+    
+    Most of the splines need not more than eight points.  This avoids
+    calling malloc() for those cases, and eight-points take only 64 bytes.
+
+ src/cairo-spline.c |   28 +++++++++++++++++++++++-----
+ src/cairoint.h     |    1 +
+ 2 files changed, 24 insertions(+), 5 deletions(-)
+
+commit 1e64ecf0758a208b469ae0a87a747b3a70c70ceb
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Thu Mar 8 22:17:30 2007 -0500
+
+    [cairo-spline] Clean-up realloc algorithm for clarity
+
+ src/cairo-spline.c |   17 +++++++----------
+ 1 files changed, 7 insertions(+), 10 deletions(-)
+
+commit cee687a33fb46b68d39bbfa64c44f0b28e10a9ee
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Thu Mar 8 22:19:49 2007 -0500
+
+    [cairo_traps_t] Reorder struct members for clarity
+
+ src/cairoint.h |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit 24aec99ffb9abce659146ea6ecbfb92856355855
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Thu Mar 8 20:32:36 2007 -0500
+
+    [cairo-traps] Add a cache of one trapezoid to cairo_traps_t
+    
+    Seems like half the time, we just need one trap.  This avoids
+    calling malloc() for those cases.
+
+ src/cairo-traps.c |   30 +++++++++++++++++++++++-------
+ src/cairoint.h    |    2 ++
+ 2 files changed, 25 insertions(+), 7 deletions(-)
+
+commit 4737416c6e7829ec21230103a1b993d2bd08cc0e
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Thu Mar 8 20:05:13 2007 -0500
+
+    [cairo-traps] Clean-up realloc algorithm for clarity
+
+ src/cairo-traps.c |   21 +++++++++------------
+ 1 files changed, 9 insertions(+), 12 deletions(-)
+
+commit a9d8cb3e8aceb5831dfb3920df1502bf3b9450a6
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Thu Mar 8 19:34:43 2007 -0500
+
+    [cairo-traps] Use INT32_MIN/MAX instead of INT16_MIN/MAX << 16
+
+ src/cairo-traps.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 5d28bf605fee84520e82818dd35cae8899ecc2ba
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Thu Mar 8 19:22:57 2007 -0500
+
+    [test] Make pdiff if necessary
+
+ test/Makefile.am |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
+
+commit e765ac745e0438296d2c852fd8231bd8f1fff034
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Thu Mar 8 18:13:55 2007 -0500
+
+    [skiplist] Prefix symbols with _cairo
+
+ src/cairo-bentley-ottmann.c  |   24 ++++++++++++------------
+ src/cairo-skiplist-private.h |   22 +++++++++++-----------
+ src/cairo-skiplist.c         |   20 ++++++++++----------
+ 3 files changed, 33 insertions(+), 33 deletions(-)
+
+commit cd78da36f663b99c67d50dcd692cd7b67677c82a
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Thu Mar 8 18:08:37 2007 -0500
+
+    [test-surfaces] Prefix public symbols with _cairo
+
+ boilerplate/cairo-boilerplate.c |    6 +++---
+ src/test-fallback-surface.c     |    8 ++++----
+ src/test-fallback-surface.h     |    2 +-
+ src/test-meta-surface.c         |    2 +-
+ src/test-meta-surface.h         |    2 +-
+ src/test-paginated-surface.c    |    2 +-
+ src/test-paginated-surface.h    |    2 +-
+ 7 files changed, 12 insertions(+), 12 deletions(-)
+
+commit 8997b3a023b0edb8877675ce520fbb883d6fa188
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Thu Mar 8 17:54:00 2007 -0500
+
+    [skiplist] Move static variable out of function
+    
+    Part of my secrect plan to make cairo compilable with:
+    
+    	#define static
+    
+    Useful for some weird debugging purposes.
+
+ src/cairo-skiplist.c |   15 ++++++++-------
+ 1 files changed, 8 insertions(+), 7 deletions(-)
+
+commit d40126f5aba481e4f4d9582cb5c37478f8ef37e7
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Thu Mar 8 17:47:33 2007 -0500
+
+    [cairo_t] Embed a gstate into cairo_t
+    
+    So we don't have to malloc the first gstate.
+
+ src/cairo-gstate.c  |   44 ++------------------------------------------
+ src/cairo-private.h |    1 +
+ src/cairo.c         |   32 ++++++++++++++------------------
+ src/cairoint.h      |   10 +++++++---
+ 4 files changed, 24 insertions(+), 63 deletions(-)
+
+commit 01f9ee39feb6ca48b9e07fdec62d8ab1b94ab75d
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Thu Mar 8 17:42:23 2007 -0500
+
+    [cairo-clip] Make _cairo_clip_init tolerate NULL target
+    
+    (needed for upcoming patches.)
+
+ src/cairo-clip.c |    5 ++++-
+ 1 files changed, 4 insertions(+), 1 deletions(-)
+
+commit bc8987068d1849cf7c16c38132fcc3c8d3b4e12e
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Thu Mar 8 17:15:35 2007 -0500
+
+    [cairo_t] Make path an array of size one
+    
+    This is more natural since cr->path can be used as if it was a pointer.
+    This means, for example, if we move on to making it a pointer, most of
+    the code using it does not need any change.  So we get some level of
+    encapsulation of implementation details, if you prefer the terminology :).
+
+ src/cairo-private.h |    2 +-
+ src/cairo.c         |   52 +++++++++++++++++++++++++-------------------------
+ 2 files changed, 27 insertions(+), 27 deletions(-)
+
+commit 74e6a24e98baf70284b65d5f4ed41bdf7449d72d
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Thu Mar 8 17:04:43 2007 -0500
+
+    [Quartz] Don't include cairo-private.h
+
+ src/cairo-quartz-surface.c |    1 -
+ 1 files changed, 0 insertions(+), 1 deletions(-)
+
+commit 6bc543a0ebe4076da31bad4d3ccca4d713948587
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Thu Mar 8 16:58:18 2007 -0500
+
+    [cairo_t] Move gstate pointer before cairo_path_fixed_t for better cache behavior
+
+ src/cairo-private.h |    4 ++--
+ src/cairo.c         |    4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+commit 85aff353ca38e607599282bc955e467df82fa01b
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Thu Mar 8 16:52:09 2007 -0500
+
+    [cairo-path-fixed] Fine-tune size of buffer
+    
+    such that cairo_path_fixed_t fits in 512 bytes.
+
+ src/cairo-path-fixed-private.h |   10 ++++++----
+ src/cairo.c                    |    4 ++--
+ 2 files changed, 8 insertions(+), 6 deletions(-)
+
+commit 1bd073a1a2951bbb09fdab6637baae0172a223f0
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Thu Mar 8 16:23:49 2007 -0500
+
+    [cairo-path-fixed] Merge op and arg bufs
+    
+    This means, we have to malloc only one buffer, not two.  Worst case
+    is that one always draws curves, which fills the arg (point) buffer
+    six times faster than op buffer.  But that's not a big deal since
+    each op takes 1 byte, while each point takes 8 bytes.  So op space
+    is cheap to spare, so to speak (about 10% memory waste at worst).
+
+ src/cairo-path-fill.c          |   51 ++++----
+ src/cairo-path-fixed-private.h |   22 +--
+ src/cairo-path-fixed.c         |  313 ++++++++++++++--------------------------
+ src/cairo.c                    |    3 +-
+ 4 files changed, 141 insertions(+), 248 deletions(-)
+
+commit 5750d669af24fe1d2707326b9d74dfbb18adf636
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Thu Mar 8 14:30:10 2007 -0500
+
+    [cairo-path-fixed] Avoid malloc for small paths
+    
+    We do this by including an initial op and arg buf in cairo_path_fixed_t,
+    so for small paths we don't have to alloc those buffers.
+    
+    The way this is done is a bit unusual.  Specifically, using an array of
+    length one instead of a normal member:
+    
+    -    cairo_path_op_buf_t *op_buf_head;
+    +    cairo_path_op_buf_t  op_buf_head[1];
+    
+    Has the advantage that read-only use of the buffers does not need any
+    change as arrays act like pointers syntactically.  All manipulation code
+    however needs to be updates, which the patch supposed does.  Still, there
+    seems to be bugs remaining as cairo-perf quits with a Bad X Request error
+    with this patch.
+
+ src/cairo-path-fixed-private.h |    4 +-
+ src/cairo-path-fixed.c         |   66 +++++++++++++++++++++++-----------------
+ src/cairo.c                    |    4 +-
+ 3 files changed, 42 insertions(+), 32 deletions(-)
+
+commit 994dd1a134484d7a1ee246906f21f02d916014a8
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Tue Mar 13 04:56:54 2007 -0400
+
+    [boilerplate] Prefer top_builddir to top_srcdir
+    
+    This may fix some build problems the Ubuntu guys are experiencing
+    with out-of-tree builds.
+
+ boilerplate/Makefile.am |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 2894ed19a3acd955a5d0e2f5a231a6f1eee8ac06
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Tue Mar 13 04:55:18 2007 -0400
+
+    [directfb,os2] #error if the backend is not compiled in, like others do
+
+ src/cairo-directfb.h |    3 +++
+ src/cairo-os2.h      |    2 ++
+ 2 files changed, 5 insertions(+), 0 deletions(-)
+
+commit 073d06d4661feb16b15ece5282a5134e3f05d8e7
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Tue Mar 13 18:45:38 2007 +1030
+
+    Fix incorrect file permission in previous commit
+
+ 0 files changed, 0 insertions(+), 0 deletions(-)
+
+commit a944f42b3d58825e8def292001e3738651b7584a
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Tue Mar 13 18:35:59 2007 +1030
+
+    Fix buffer overflow warning
+
+ src/cairo-truetype-subset.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 0f78eb8ccf60c60a4b66441958a7498dc9f7fa47
+Author: Carl Worth <cworth@cworth.org>
+Date:   Mon Mar 12 16:24:58 2007 -0700
+
+    perf/README: Add notes on using cairo-perf-diff
+
+ perf/README |  105 ++++++++++++++++++++++++++++++++++++++++++++++++++++-------
+ 1 files changed, 93 insertions(+), 12 deletions(-)
+
+commit 14cab8b020f429d346561d8ab70b154b2e3f0668
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Sun Mar 11 21:55:19 2007 +0000
+
+    Correct an off-by-one in the reflection of the convolution index.
+    
+    Currently the convolution code uses the formula 2*(N-1)-n to reflect the index
+    n when n is greater than or equal to N.
+    This is wrong as n=N -> 2*(N-1)-N = N-2 instead of N-1.
+    
+    Furthermore when the image is small, e.g. at the highest levels of the
+    pyramid, this causes the code to index before the start of the array and
+    causes valgrind to issue a warning.
+
+ test/pdiff/lpyramid.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 789aada06b52e068662f0ac0f7a424c51bcba510
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Sun Mar 11 20:55:26 2007 +0000
+
+    Avoid the struct copy when source and destination are the same.
+    
+    On some architectures, gcc will emit a memcpy for structure copies which will
+    produce a valgrind warning when the source and destination pointers are the
+    same. Workaround this issue by explicitly checking the source and destination
+    for inequality before doing the structure assignment.
+
+ src/cairo-surface.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit ef284a2d6bbeae8711226f1f1f2cf4936f6937eb
+Author: Carl Worth <cworth@cworth.org>
+Date:   Fri Mar 9 13:36:03 2007 -0800
+
+    Fix a LOCK vs. UNLOCK typo, (yes, I'm that stupid).
+    
+    Thanks to M.Drochner@fz-juelich.de for noticing the bug.
+    
+    This fixes bug #10235:
+    
+    	locking bug in cairo_ft_scaled_font_unlock_face()
+    	http://bugs.freedesktop.org/show_bug.cgi?id=10235
+
+ src/cairo-ft-font.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 772edc9133d41dfd667ae5915dfa6ace0bcbfd0d
+Author: Emmanuel Pacaud <emmanuel.pacaud@free.fr>
+Date:   Thu Mar 8 21:32:59 2007 +0100
+
+    SVG: fix a radial gradient failure when using CAIRO_EXTEND_REFLECT.
+    
+    Assume from the beginning we're using a circle with a radius equal to
+    2 * ( r1 - r0 ) when emulating CAIRO_EXTEND_REFLECT.
+
+ src/cairo-svg-surface.c |   14 +++++++-------
+ 1 files changed, 7 insertions(+), 7 deletions(-)
+
+commit c07867c545d7ab7c4a104944768f8a5b69ef9596
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Wed Mar 7 15:55:02 2007 -0500
+
+    [glitz] Mark some constant static structures as const
+
+ src/cairo-glitz-surface.c |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
+
+commit 88632575bfae348a63e3e6228d5ceaa64715ae5f
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Wed Mar 7 15:54:20 2007 -0500
+
+    [PS/PDF/SVG] Rename internal symbols to have _cairo_*_surface prefix
+
+ src/cairo-pdf-surface.c |   74 +++++++++++++-------------
+ src/cairo-ps-surface.c  |   52 +++++++++---------
+ src/cairo-svg-surface.c |  136 +++++++++++++++++++++++-----------------------
+ 3 files changed, 131 insertions(+), 131 deletions(-)
+
+commit 2cc1c73705d70f834b43996f70080860ac66e57d
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Wed Mar 7 15:53:27 2007 -0500
+
+    [cairoint] Move endian-conversion routines into cairoint.h
+
+ src/cairo-cff-subset.c      |   28 ----------------------------
+ src/cairo-truetype-subset.c |   37 -------------------------------------
+ src/cairoint.h              |   35 +++++++++++++++++++++++++++++++++++
+ 3 files changed, 35 insertions(+), 65 deletions(-)
+
+commit 62e864e73cd1136b3c0e889dca43a1c0cc648b21
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Wed Mar 7 15:51:35 2007 -0500
+
+    [Type1] Add cairo-type1-private.h that Type1 fallback and subset code share
+
+ doc/public/Headers.mk      |    1 +
+ src/Makefile.am            |    1 +
+ src/cairo-type1-fallback.c |   14 ++++--------
+ src/cairo-type1-private.h  |   45 ++++++++++++++++++++++++++++++++++++++++++++
+ src/cairo-type1-subset.c   |   18 ++++++----------
+ 5 files changed, 59 insertions(+), 20 deletions(-)
+
+commit ef9799d596600aea334707d2ff00fcca82280d83
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Wed Mar 7 15:49:51 2007 -0500
+
+    [cosmetic] Remove static var from testing code in bentley-ottman.
+
+ src/cairo-bentley-ottmann.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 92d331a23407c79d83bf0b2a7d003ba3525641d4
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Wed Mar 7 13:31:54 2007 +0000
+
+    Fix up the trivial leaks found by valgrind.
+
+ perf/cairo-perf.c |    4 ++++
+ 1 files changed, 4 insertions(+), 0 deletions(-)
+
+commit 7d972086d6ea6a6bfa47b5fb47f7a21be61e10e8
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Wed Mar 7 12:19:44 2007 +0000
+
+    Add valgrind/callgrind targets to Makefile.
+
+ perf/Makefile.am |   20 ++++++++++++++++++++
+ 1 files changed, 20 insertions(+), 0 deletions(-)
+
+commit 734d32ed7a50284fcc8984af67734bb306735691
+Author: Emmanuel Pacaud <emmanuel.pacaud@lapp.in2p3.fr>
+Date:   Tue Mar 6 15:49:53 2007 -0800
+
+    SVG: Fix CAIRO_EXTEND_REFLECT for radial gradients.
+    
+    This patch also handles cases where r0 > r1, (one circle must still
+    be wholly contained within the other as that's all SVG supports).
+    
+    This patch should also prevent a crash when r0 == r1.
+
+ src/cairo-svg-surface.c |  337 ++++++++++++++++++++++++++++++++++++++---------
+ 1 files changed, 277 insertions(+), 60 deletions(-)
+
+commit 32536a7b794c38ff1944b8af5e56e8962e76c311
+Author: Brian Ewins <Brian.Ewins@gmail.com>
+Date:   Tue Mar 6 23:45:23 2007 +0000
+
+    [atsui] clean up warnings
+    
+    Just tidying up  warnings left behind by previous fixes.
+
+ src/cairo-atsui-font.c |   13 ++++++-------
+ 1 files changed, 6 insertions(+), 7 deletions(-)
+
+commit 9032bf4e2d3bffe84d11a771ba4072cdd8926b77
+Author: Brian Ewins <Brian.Ewins@gmail.com>
+Date:   Tue Mar 6 23:24:33 2007 +0000
+
+    [quartz] rename remaining nquartz symbols to quartz.
+    
+    Renaming any nquartz symbols and files left to quartz.
+
+ doc/public/Makefile.am     |    1 -
+ src/Makefile.am            |    2 -
+ src/cairo-quartz-private.h |    6 +-
+ src/cairo-quartz-surface.c |  238 ++++++++++++++++++++++----------------------
+ 4 files changed, 122 insertions(+), 125 deletions(-)
+
+commit b0d05f7421c457120b9d86a83c4935c67b217fab
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Tue Mar 6 14:26:51 2007 -0500
+
+    [configure.in] Remove AM_MAINTAINER_MODE
+    
+    Maintainer-mode is known broken behavior and discouraged.  It has
+    created headaches before when you run configure and all in a sudden
+    editing Makefile.am's does not trigger a Makefile update...
+
+ configure.in |    2 --
+ 1 files changed, 0 insertions(+), 2 deletions(-)
+
+commit f7beb220df74fef60c102fb5cc827fb2d3962296
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Tue Mar 6 10:33:09 2007 -0500
+
+    Remove extra word in docs
+
+ src/cairo.h |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 81b98c93b68839d20d3033170eeb5026257d52b8
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Tue Mar 6 23:11:38 2007 +1030
+
+    PDF: Set page group color space to DeviceRGB
+    
+    See http://lists.freedesktop.org/archives/cairo/2006-November/008551.html
+
+ src/cairo-pdf-surface.c |    9 ++++++---
+ 1 files changed, 6 insertions(+), 3 deletions(-)
+
+commit 8f0ff52cf74fe4b18c46f9a62689b991645295d0
+Author: Carl Worth <cworth@cworth.org>
+Date:   Tue Mar 6 01:39:37 2007 -0800
+
+    Increment version to 1.4.1 after making the 1.4.0 release
+
+ configure.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
 commit 5dfa8c23f13f5cafac5cf56f34888a6e01dc79ba
 Author: Carl Worth <cworth@cworth.org>
 Date:   Tue Mar 6 01:25:17 2007 -0800

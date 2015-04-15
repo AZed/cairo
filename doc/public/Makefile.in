@@ -179,9 +179,6 @@ LTLIBOBJS = @LTLIBOBJS@
 LTP = @LTP@
 LTP_GENHTML = @LTP_GENHTML@
 LT_CURRENT_MINUS_AGE = @LT_CURRENT_MINUS_AGE@
-MAINT = @MAINT@
-MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
-MAINTAINER_MODE_TRUE = @MAINTAINER_MODE_TRUE@
 MAKEINFO = @MAKEINFO@
 MMX_CFLAGS = @MMX_CFLAGS@
 OBJEXT = @OBJEXT@
@@ -292,6 +289,7 @@ CFILE_GLOB = $(top_srcdir)/src/*.c $(top_srcdir)/src/*.h
 PRIVATE_TEST_HFILES = \
 	cairo-meta-surface-private.h \
 	cairo-truetype-subset-private.h \
+	cairo-type1-private.h \
 	cairo-hash-private.h \
 	cairo-cache-private.h \
 	cairo-output-stream-private.h \
@@ -326,7 +324,6 @@ UNSUPPORTED_HFILES = \
 	cairo-beos.h		\
 	cairo-directfb.h	\
 	cairo-glitz.h		\
-	cairo-nquartz.h		\
 	cairo-os2.h		\
 	cairo-quartz.h		\
 	cairo-xcb.h		\
@@ -392,7 +389,7 @@ CLEANFILES = $(SCANOBJ_FILES) $(DOC_MODULE)-unused.txt $(DOC_STAMPS)
 all: all-am
 
 .SUFFIXES:
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/Headers.mk $(top_srcdir)/gtk-doc.make $(am__configure_deps)
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(srcdir)/Headers.mk $(top_srcdir)/gtk-doc.make $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -417,9 +414,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
+$(top_srcdir)/configure:  $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
+$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 version.xml: $(top_builddir)/config.status $(srcdir)/version.xml.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
