@@ -1,5 +1,5 @@
 /*
- * $Id: fbpict.c,v 1.5.2.2 2005-09-19 02:55:54 vektor Exp $
+ * $Id: fbpict.c,v 1.5.2.2 2005/09/19 02:55:54 vektor Exp $
  *
  * Copyright © 2000 SuSE, Inc.
  *
