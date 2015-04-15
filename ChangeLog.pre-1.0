@@ -743,7 +743,7 @@ Date:   Mon Aug 22 22:11:44 2005 +0000
  ChangeLog                               |   33 ++
  doc/public/cairo-docs.xml               |   50 ++-
  doc/public/cairo-sections.txt           |  262 ++++++----
- doc/public/tmpl/cairo-font-options.sgml |  194 ++++++++
+ doc/public/tmpl/cairo-font-options.sgml |  194 +++++++
  doc/public/tmpl/cairo-font.sgml         |  268 +----------
  doc/public/tmpl/cairo-ft.sgml           |   18 +-
  doc/public/tmpl/cairo-glitz.sgml        |    4 +-
@@ -767,8 +767,8 @@ Date:   Mon Aug 22 22:11:44 2005 +0000
  doc/public/tmpl/cairo-xcb-xrender.sgml  |    4 +-
  doc/public/tmpl/cairo-xcb.sgml          |    4 +-
  doc/public/tmpl/cairo-xlib.sgml         |    4 +-
- doc/public/tmpl/cairo.sgml              |  819 ++++---------------------------
- 28 files changed, 1581 insertions(+), 1229 deletions(-)
+ doc/public/tmpl/cairo.sgml              |  833 ++++---------------------------
+ 28 files changed, 1588 insertions(+), 1236 deletions(-)
 
 commit 2d9d744f8c8a9fdf011a292ef6e823605d000f23
 Author: Owen Taylor <otaylor@redhat.com>

@@ -711,11 +711,6 @@ cairo_push_group_with_content (cairo_t *cr, cairo_content_t content)
 	_cairo_path_fixed_transform (cr->path, &matrix);
     }
 
-    /* If we have a current path, we need to adjust it to compensate for
-     * the device offset just applied. */
-    _cairo_path_fixed_transform (cr->path,
-				 &group_surface->device_transform);
-
     /* create a new gstate for the redirect */
     cairo_save (cr);
     if (unlikely (cr->status))
@@ -2103,12 +2098,6 @@ cairo_rectangle (cairo_t *cr,
     cairo_close_path (cr);
 }
 
-/**
- * cairo_stroke_to_path:
- * @cr: a cairo context
- *
- * This function is not yet implemented.
- **/
 #if 0
 /* XXX: NYI */
 void
@@ -3790,7 +3779,7 @@ slim_hidden_def (cairo_get_tolerance);
  * cairo_get_antialias:
  * @cr: a cairo context
  *
- * Gets the current shape antialiasing mode, as set by cairo_set_antialias().
+ * Gets the current shape antialiasing mode, as set by cairo_set_shape_antialias().
  *
  * Return value: the current shape antialiasing mode.
  **/
