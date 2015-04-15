@@ -10,8 +10,6 @@
 <link rel="next" href="cairo-Version-Information.html" title="Version Information">
 <meta name="generator" content="GTK-Doc V1.9 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
-<link rel="part" href="pt01.html" title="Part&#160;I.&#160;Tutorial">
-<link rel="part" href="pt02.html" title="Part&#160;II.&#160;Reference">
 <link rel="chapter" href="Drawing.html" title="Drawing">
 <link rel="chapter" href="Fonts.html" title="Fonts">
 <link rel="chapter" href="Surfaces.html" title="Surfaces">
@@ -19,6 +17,7 @@
 <link rel="index" href="ix01.html" title="Index">
 <link rel="index" href="index-1.2.html" title="Index of new symbols in 1.2">
 <link rel="index" href="index-1.4.html" title="Index of new symbols in 1.4">
+<link rel="index" href="index-1.6.html" title="Index of new symbols in 1.6">
 <link rel="appendix" href="language-bindings.html" title="Appendix&#160;A.&#160;Creating a language binding for cairo">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -30,16 +29,16 @@
 <th width="100%" align="center">Cairo: A Vector Graphics Library</th>
 <td><a accesskey="n" href="cairo-Version-Information.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
 </tr>
-<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2625091" class="shortcut">Top</a>
+<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2613704" class="shortcut">Top</a>
                   &#160;|&#160;
-                  <a href="#id2591121" class="shortcut">Description</a></nobr></td></tr>
+                  <a href="#id2670967" class="shortcut">Description</a></nobr></td></tr>
 </table>
 <div class="refentry" lang="en">
 <a name="cairo-Error-Handling"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
 <h2>
-<a name="id2625091"></a><span class="refentrytitle">Error handling</span>
+<a name="id2613704"></a><span class="refentrytitle">Error handling</span>
 </h2>
 <p>Error handling &#8212; Decoding cairo's status</p>
 </td>
@@ -57,17 +56,27 @@ void                <a class="link" href="cairo-Error-Handling.html#cairo-debug-
 </pre>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2591121"></a><h2>Description</h2>
+<a name="id2670967"></a><h2>Description</h2>
 <p>
-
+Cairo uses a single status type to represent all kinds of errors.  A status
+value of <a class="link" href="cairo-Error-Handling.html#CAIRO-STATUS-SUCCESS:CAPS"><code class="literal">CAIRO_STATUS_SUCCESS</code></a> represents no error and has an integer value
+of zero.  All other status values represent an error.
+</p>
+<p>
+Cairo's error handling is designed to be easy to use and safe.  All major
+cairo objects <em class="firstterm">retain</em> an error status internally which
+can be queried anytime by the users using cairo*<code class="function">_status()</code> calls.  In
+the mean time, it is safe to call all cairo functions normally even if the
+underlying object is in an error status.  This means that no error handling
+code is required before or after each individual cairo function call.
 </p>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2664120"></a><h2>Details</h2>
+<a name="id2671017"></a><h2>Details</h2>
 <div class="refsect2" lang="en">
-<a name="id2617688"></a><h3>
+<a name="id2671028"></a><h3>
 <a name="cairo-status-t"></a>enum cairo_status_t</h3>
-<a class="indexterm" name="id2665539"></a><pre class="programlisting">typedef enum _cairo_status {
+<a class="indexterm" name="id2671039"></a><pre class="programlisting">typedef enum _cairo_status {
     CAIRO_STATUS_SUCCESS = 0,
     CAIRO_STATUS_NO_MEMORY,
     CAIRO_STATUS_INVALID_RESTORE,
@@ -90,7 +99,10 @@ void                <a class="link" href="cairo-Error-Handling.html#cairo-debug-
     CAIRO_STATUS_INVALID_DASH,
     CAIRO_STATUS_INVALID_DSC_COMMENT,
     CAIRO_STATUS_INVALID_INDEX,
-    CAIRO_STATUS_CLIP_NOT_REPRESENTABLE
+    CAIRO_STATUS_CLIP_NOT_REPRESENTABLE,
+    CAIRO_STATUS_TEMP_FILE_ERROR,
+    CAIRO_STATUS_INVALID_STRIDE
+    /* after adding a new error: update CAIRO_STATUS_LAST_STATUS in cairoint.h */
 } cairo_status_t;
 </pre>
 <p>
@@ -120,7 +132,7 @@ to get a human-readable representation of an error message.</p>
 </tr>
 <tr>
 <td><p><span class="term"><a name="CAIRO-STATUS-INVALID-RESTORE:CAPS"></a><code class="literal">CAIRO_STATUS_INVALID_RESTORE</code></span></p></td>
-<td> cairo_restore without matching cairo_save
+<td> <a class="link" href="cairo-cairo-t.html#cairo-restore"><code class="function">cairo_restore()</code></a> called without matching <a class="link" href="cairo-cairo-t.html#cairo-save"><code class="function">cairo_save()</code></a>
 </td>
 </tr>
 <tr>
@@ -140,12 +152,12 @@ to get a human-readable representation of an error message.</p>
 </tr>
 <tr>
 <td><p><span class="term"><a name="CAIRO-STATUS-INVALID-STATUS:CAPS"></a><code class="literal">CAIRO_STATUS_INVALID_STATUS</code></span></p></td>
-<td> invalid value for an input cairo_status_t
+<td> invalid value for an input <a class="link" href="cairo-Error-Handling.html#cairo-status-t"><span class="type">cairo_status_t</span></a>
 </td>
 </tr>
 <tr>
 <td><p><span class="term"><a name="CAIRO-STATUS-NULL-POINTER:CAPS"></a><code class="literal">CAIRO_STATUS_NULL_POINTER</code></span></p></td>
-<td> NULL pointer
+<td> <code class="literal">NULL</code> pointer
 </td>
 </tr>
 <tr>
@@ -185,12 +197,12 @@ to get a human-readable representation of an error message.</p>
 </tr>
 <tr>
 <td><p><span class="term"><a name="CAIRO-STATUS-INVALID-CONTENT:CAPS"></a><code class="literal">CAIRO_STATUS_INVALID_CONTENT</code></span></p></td>
-<td> invalid value for an input cairo_content_t
+<td> invalid value for an input <a class="link" href="cairo-cairo-surface-t.html#cairo-content-t"><span class="type">cairo_content_t</span></a>
 </td>
 </tr>
 <tr>
 <td><p><span class="term"><a name="CAIRO-STATUS-INVALID-FORMAT:CAPS"></a><code class="literal">CAIRO_STATUS_INVALID_FORMAT</code></span></p></td>
-<td> invalid value for an input cairo_format_t
+<td> invalid value for an input <a class="link" href="cairo-Image-Surfaces.html#cairo-format-t"><span class="type">cairo_format_t</span></a>
 </td>
 </tr>
 <tr>
@@ -223,14 +235,24 @@ to get a human-readable representation of an error message.</p>
 <td> clip region not representable in desired format (Since 1.4)
 </td>
 </tr>
+<tr>
+<td><p><span class="term"><a name="CAIRO-STATUS-TEMP-FILE-ERROR:CAPS"></a><code class="literal">CAIRO_STATUS_TEMP_FILE_ERROR</code></span></p></td>
+<td> error creating or writing to a temporary file (Since 1.6)
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><a name="CAIRO-STATUS-INVALID-STRIDE:CAPS"></a><code class="literal">CAIRO_STATUS_INVALID_STRIDE</code></span></p></td>
+<td> invalid value for stride (Since 1.6)
+</td>
+</tr>
 </tbody>
 </table></div>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2665820"></a><h3>
+<a name="id2674272"></a><h3>
 <a name="cairo-status-to-string"></a>cairo_status_to_string ()</h3>
-<a class="indexterm" name="id2665831"></a><pre class="programlisting">const char*         cairo_status_to_string              (<a class="link" href="cairo-Error-Handling.html#cairo-status-t">cairo_status_t</a> status);</pre>
+<a class="indexterm" name="id2674283"></a><pre class="programlisting">const char*         cairo_status_to_string              (<a class="link" href="cairo-Error-Handling.html#cairo-status-t">cairo_status_t</a> status);</pre>
 <p>
 Provides a human-readable description of a <a class="link" href="cairo-Error-Handling.html#cairo-status-t"><span class="type">cairo_status_t</span></a>.</p>
 <p>
@@ -246,7 +268,7 @@ Provides a human-readable description of a <a class="link" href="cairo-Error-Han
 </tr>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></p></td>
-<td>a string representation of the status
+<td> a string representation of the status
 </td>
 </tr>
 </tbody>
@@ -254,9 +276,9 @@ Provides a human-readable description of a <a class="link" href="cairo-Error-Han
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2664929"></a><h3>
+<a name="id2674354"></a><h3>
 <a name="cairo-debug-reset-static-data"></a>cairo_debug_reset_static_data ()</h3>
-<a class="indexterm" name="id2664943"></a><pre class="programlisting">void                cairo_debug_reset_static_data       (void);</pre>
+<a class="indexterm" name="id2674366"></a><pre class="programlisting">void                cairo_debug_reset_static_data       (void);</pre>
 <p>
 Resets all static data within cairo to its original state,
 (ie. identical to the state at the time of program invocation). For
@@ -265,9 +287,9 @@ example, all caches within cairo will be flushed empty.
 <p>
 This function is intended to be useful when using memory-checking
 tools such as valgrind. When valgrind's memcheck analyzes a
-cairo-using program without a call to cairo_debug_reset_static_data,
+cairo-using program without a call to <a class="link" href="cairo-Error-Handling.html#cairo-debug-reset-static-data"><code class="function">cairo_debug_reset_static_data()</code></a>,
 it will report all data reachable via cairo's static objects as
-"still reachable". Calling cairo_debug_reset_static_data just prior
+"still reachable". Calling <a class="link" href="cairo-Error-Handling.html#cairo-debug-reset-static-data"><code class="function">cairo_debug_reset_static_data()</code></a> just prior
 to program termination will make it easier to get squeaky clean
 reports from valgrind.
 </p>
@@ -283,9 +305,23 @@ failure due to a hash table being destroyed when non-empty).</p>
 </div>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2664992"></a><div class="refsect2" lang="en"><a name="id2664993"></a></div>
+<a name="id2674434"></a><h2>See Also</h2>
+<p>
+</p>
+<div class="itemizedlist"><ul type="disc">
+<li><a class="link" href="cairo-cairo-t.html#cairo-status"><code class="function">cairo_status()</code></a></li>
+<li><a class="link" href="cairo-cairo-surface-t.html#cairo-surface-status"><code class="function">cairo_surface_status()</code></a></li>
+<li><a class="link" href="cairo-Patterns.html#cairo-pattern-status"><code class="function">cairo_pattern_status()</code></a></li>
+<li><a class="link" href="cairo-cairo-font-face-t.html#cairo-font-face-status"><code class="function">cairo_font_face_status()</code></a></li>
+<li><a class="link" href="cairo-Scaled-Fonts.html#cairo-scaled-font-status"><code class="function">cairo_scaled_font_status()</code></a></li>
+</ul></div>
+<p>
+</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="id2674499"></a><div class="refsect2" lang="en"><a name="id2674500"></a></div>
 <hr>
-<div class="refsect2" lang="en"><a name="id2664994"></a></div>
+<div class="refsect2" lang="en"><a name="id2674501"></a></div>
 </div>
 </div>
 </body>

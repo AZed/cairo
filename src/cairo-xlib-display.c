@@ -266,14 +266,6 @@ _cairo_xlib_display_get (Display *dpy)
      */
     XRenderQueryVersion (dpy, &major_unused, &minor_unused);
 
-    /* Xlib calls out to the extension close_display hooks in LIFO
-     * order. So we have to ensure that all extensions that we depend
-     * on in our close_display hook are properly initialized before we
-     * add our hook. For now, that means Render, so we call into its
-     * QueryVersion function to ensure it gets initialized.
-     */
-    XRenderQueryVersion (dpy, &major_unused, &minor_unused);
-
     codes = XAddExtension (dpy);
     if (codes == NULL) {
 	_cairo_error_throw (CAIRO_STATUS_NO_MEMORY);

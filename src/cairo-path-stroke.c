@@ -254,22 +254,6 @@ _cairo_slope_compare_sgn (double dx1, double dy1, double dx2, double dy2)
     return 0;
 }
 
-/**
- * _cairo_slope_compare_sgn
- *
- * Return -1, 0 or 1 depending on the relative slopes of
- * two lines.
- */
-static int
-_cairo_slope_compare_sgn (double dx1, double dy1, double dx2, double dy2)
-{
-    double  c = (dx1 * dy2 - dx2 * dy1);
-
-    if (c > 0) return 1;
-    if (c < 0) return -1;
-    return 0;
-}
-
 static cairo_status_t
 _cairo_stroker_join (cairo_stroker_t *stroker, cairo_stroke_face_t *in, cairo_stroke_face_t *out)
 {

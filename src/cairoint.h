@@ -1868,9 +1868,6 @@ cairo_private int
 _cairo_format_bits_per_pixel (cairo_format_t format);
 
 cairo_private cairo_format_t
-_cairo_format_width (cairo_format_t format);
-
-cairo_private cairo_format_t
 _cairo_format_from_content (cairo_content_t content);
 
 cairo_private cairo_content_t
