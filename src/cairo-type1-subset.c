@@ -1214,10 +1214,15 @@ cairo_type1_font_subset_generate (void       *abstract_font,
 	goto fail;
     }
 
-    if (font->face->stream->read) {
-	ret = font->face->stream->read (font->face->stream, 0,
-					(unsigned char *) font->type1_data,
-					font->type1_length);
+    if (font->face->stream->read != NULL) {
+	/* Note that read() may be implemented as a macro, thanks POSIX!, so we
+	 * need to wrap the following usage in parentheses in order to
+	 * disambiguate it for the pre-processor - using the verbose function
+	 * pointer dereference for clarity.
+	 */
+	ret = (* font->face->stream->read) (font->face->stream, 0,
+					    (unsigned char *) font->type1_data,
+					    font->type1_length);
 	if (ret != font->type1_length) {
 	    status = _cairo_error (CAIRO_STATUS_READ_ERROR);
 	    goto fail;

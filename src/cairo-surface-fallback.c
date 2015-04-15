@@ -527,16 +527,14 @@ _clip_and_composite_trapezoids (cairo_pattern_t *src,
     cairo_rectangle_int_t extents;
     cairo_composite_traps_info_t traps_info;
 
-    if (traps->num_traps == 0)
+    if (_cairo_operator_bounded_by_mask (op) && traps->num_traps == 0)
         return CAIRO_STATUS_SUCCESS;
 
     status = _cairo_surface_get_extents (dst, &extents);
-
     if (status)
         return status;
 
     status = _cairo_traps_extract_region (traps, &trap_region);
-
     if (CAIRO_INT_STATUS_UNSUPPORTED == status) {
         has_trap_region = FALSE;
     } else if (status) {
@@ -990,6 +988,7 @@ _cairo_surface_fallback_show_glyphs (cairo_surface_t		*surface,
 
     if (_cairo_operator_bounded_by_mask (op)) {
         cairo_rectangle_int_t glyph_extents;
+
 	status = _cairo_scaled_font_glyph_device_extents (scaled_font,
 							  glyphs,
 							  num_glyphs,
@@ -1251,6 +1250,8 @@ _cairo_surface_fallback_clone_similar (cairo_surface_t	*surface,
 				       int		 src_y,
 				       int		 width,
 				       int		 height,
+				       int		*clone_offset_x,
+				       int		*clone_offset_y,
 				       cairo_surface_t **clone_out)
 {
     cairo_status_t status;
@@ -1280,9 +1281,11 @@ _cairo_surface_fallback_clone_similar (cairo_surface_t	*surface,
     status = cairo_status (cr);
     cairo_destroy (cr);
 
-    if (status == CAIRO_STATUS_SUCCESS)
+    if (status == CAIRO_STATUS_SUCCESS) {
+	*clone_offset_x = src_x;
+	*clone_offset_y = src_y;
 	*clone_out = new_surface;
-    else
+    } else
 	cairo_surface_destroy (new_surface);
 
     return status;
