@@ -1,6 +1,6 @@
 /* -*- Mode: c; c-basic-offset: 4; indent-tabs-mode: t; tab-width: 8; -*- */
 /*
- * Copyright 2010 Krzysztof Kosiński
+ * Copyright 2010 Andrea Canciani
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -22,47 +22,38 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * Author: Krzysztof Kosiński <tweenk.pl@gmail.com>
+ * Author: Andrea Canciani <ranma42@gmail.com>
  */
 
 #include "cairo-test.h"
 
-/* originally reported in https://bugs.freedesktop.org/show_bug.cgi?id=29470 */
-
-#define OFFSET 50
-#define SIZE 1000
-
-static void mark_point(cairo_t *ct, double x, double y)
-{
-    cairo_rectangle(ct, x-2, y-2, 4, 4);
-    cairo_set_source_rgb(ct, 1,0,0);
-    cairo_fill(ct);
-}
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
-    cairo_pattern_t *gr = cairo_pattern_create_linear (SIZE - OFFSET, OFFSET,
-                                                       OFFSET, SIZE - OFFSET);
-
-    cairo_pattern_add_color_stop_rgb (gr, 0.0, 1, 1, 1);
-    cairo_pattern_add_color_stop_rgb (gr, 0.0, 0, 0, 0);
-    cairo_pattern_add_color_stop_rgb (gr, 1.0, 0, 0, 0);
-    cairo_pattern_add_color_stop_rgb (gr, 1.0, 1, 1, 1);
-
-    cairo_set_source (cr, gr);
-    cairo_pattern_destroy (gr);
+    cairo_set_source_rgb (cr, 1, 1, 1);
     cairo_paint (cr);
 
-    mark_point(cr, SIZE - OFFSET, OFFSET);
-    mark_point(cr, OFFSET, SIZE - OFFSET);
+    cairo_translate (cr, 0, -25);
+
+    cairo_move_to  (cr,   50, 200);
+    cairo_curve_to (cr,   50, 150, 100,  50, 150,  50);
+    cairo_curve_to (cr,  200,  50, 250, 250, 200, 250);
+    cairo_curve_to (cr,  150, 250, 200,  50,  50, 100);
+    cairo_curve_to (cr, -100, 150, 200, 150, 200, 200);
+    cairo_curve_to (cr,  200, 250,  50, 250,  50, 200);
+
+    cairo_set_source_rgb (cr, 0, 0, 0);
+    cairo_fill_preserve (cr);
+
+    cairo_set_source_rgb (cr, 1, 0, 0);
+    cairo_stroke (cr);
 
     return CAIRO_TEST_SUCCESS;
 }
 
-CAIRO_TEST (linear_gradient_large,
-	    "Tests that large linear gradients get rendered at the correct place",
-	    "linear, pattern", /* keywords */
+CAIRO_TEST (bug_extents,
+	    "Tests a bug in the computation of approximate extents",
+	    "extents", /* keywords */
 	    NULL, /* requirements */
-	    SIZE, SIZE,
+	    250, 250,
 	    NULL, draw)

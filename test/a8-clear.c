@@ -1,6 +1,5 @@
-/* -*- Mode: c; c-basic-offset: 4; indent-tabs-mode: t; tab-width: 8; -*- */
 /*
- * Copyright 2010 Krzysztof Kosiński
+ * Copyright © 2010 Intel Corporation
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -22,47 +21,44 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * Author: Krzysztof Kosiński <tweenk.pl@gmail.com>
+ * Author: Chris Wilson <chris@chris-wilson.co.uk>
+ *
+ * Based on a bug snippet by Jeremy Moles <jeremy@emperorlinux.com>
  */
 
 #include "cairo-test.h"
 
-/* originally reported in https://bugs.freedesktop.org/show_bug.cgi?id=29470 */
-
-#define OFFSET 50
-#define SIZE 1000
-
-static void mark_point(cairo_t *ct, double x, double y)
-{
-    cairo_rectangle(ct, x-2, y-2, 4, 4);
-    cairo_set_source_rgb(ct, 1,0,0);
-    cairo_fill(ct);
-}
-
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
-    cairo_pattern_t *gr = cairo_pattern_create_linear (SIZE - OFFSET, OFFSET,
-                                                       OFFSET, SIZE - OFFSET);
+    cairo_pattern_t *mask;
 
-    cairo_pattern_add_color_stop_rgb (gr, 0.0, 1, 1, 1);
-    cairo_pattern_add_color_stop_rgb (gr, 0.0, 0, 0, 0);
-    cairo_pattern_add_color_stop_rgb (gr, 1.0, 0, 0, 0);
-    cairo_pattern_add_color_stop_rgb (gr, 1.0, 1, 1, 1);
-
-    cairo_set_source (cr, gr);
-    cairo_pattern_destroy (gr);
+    cairo_set_source_rgb (cr, 1, 0, 0);
     cairo_paint (cr);
 
-    mark_point(cr, SIZE - OFFSET, OFFSET);
-    mark_point(cr, OFFSET, SIZE - OFFSET);
+    cairo_push_group_with_content (cr, CAIRO_CONTENT_ALPHA);
+    {
+	cairo_set_source_rgb (cr, 1, 1, 1);
+	cairo_paint (cr);
+
+	cairo_move_to (cr, 0, 0);
+	cairo_line_to (cr, width, height);
+	cairo_set_operator (cr, CAIRO_OPERATOR_CLEAR);
+	cairo_set_line_width (cr, 10);
+	cairo_stroke (cr);
+    }
+    mask = cairo_pop_group (cr);
+    cairo_set_source_rgb (cr, 1, 1, 1);
+    cairo_mask (cr, mask);
+    cairo_pattern_destroy (mask);
 
     return CAIRO_TEST_SUCCESS;
 }
 
-CAIRO_TEST (linear_gradient_large,
-	    "Tests that large linear gradients get rendered at the correct place",
-	    "linear, pattern", /* keywords */
+CAIRO_TEST (a8_clear,
+	    "Test clear on an a8 surface",
+	    "a8, clear", /* keywords */
 	    NULL, /* requirements */
-	    SIZE, SIZE,
+	    40, 40,
 	    NULL, draw)
+
