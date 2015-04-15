@@ -1,69 +1,68 @@
-%define freetype_version 2.1.3-3
+%define pixman_version 0.12.0
+%define freetype_version 2.1.9
 %define fontconfig_version 2.0
 
-Summary:   A vector graphics library
-Name:      cairo
-Version:   1.2.4
-Release:   5%{?dist}
-URL:       http://cairographics.org
-Source0:   http://cairographics.org/releases/%{name}-%{version}.tar.gz
-License:   LGPL/MPL
-Group:     System Environment/Libraries
-BuildRoot: %{_tmppath}/%{name}-%{version}-root
+Summary:	A 2D graphics library
+Name:		cairo
+Version:	1.8.8
+Release:	3.1%{?dist}
+URL:		http://cairographics.org
+Source0:	http://cairographics.org/releases/%{name}-%{version}.tar.gz
+License:	LGPLv2 or MPLv1.1
+Group:		System Environment/Libraries
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-Obsoletes: libpixman <= 0.1.6
-Obsoletes: libpixman-devel <= 0.1.6
-Obsoletes: libpixman-debuginfo <= 0.1.6
-
-Requires: /sbin/ldconfig
 BuildRequires: pkgconfig
 BuildRequires: libXrender-devel
 BuildRequires: libX11-devel
 BuildRequires: libpng-devel
 BuildRequires: libxml2-devel
+BuildRequires: pixman-devel >= %{pixman_version}
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: fontconfig-devel >= %{fontconfig_version}
 
-# https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=222679
-Patch0: cairo-1.2.4-fix-endianess-mismatch-crasher.patch
+Patch0: cairo-1.8.6-repeat-modes.patch
 
-Patch1: cairo-1.2.4-ctype.patch
-Patch2: cairo-1.2.4-alloc-overflow.patch
-Patch3: cairo-1.2.4-rgb555.patch
+%description
+Cairo is a 2D graphics library designed to provide high-quality display
+and print output. Currently supported output targets include the X Window
+System, OpenGL (via glitz), in-memory image buffers, and image files (PDF,
+PostScript, and SVG).
 
-%description 
-Cairo is a vector graphics library designed to provide high-quality
-display and print output. Currently supported output targets include
-the X Window System, OpenGL (via glitz), in-memory image buffers, and
-image files (PDF, PostScript, and SVG).  Cairo is designed to produce
-identical output on all output media while taking advantage of display
-hardware acceleration when available (eg. through the X Render
-Extension or OpenGL).
+Cairo is designed to produce consistent output on all output media while
+taking advantage of display hardware acceleration when available (e.g.
+through the X Render Extension or OpenGL).
 
 %package devel
-Summary: Cairo developmental libraries and header files
+Summary: Development files for cairo
 Group: Development/Libraries
 Requires: %{name} = %{version}-%{release}
 Requires: libXrender-devel
 Requires: libpng-devel
+Requires: pixman-devel >= %{pixman_version}
 Requires: freetype-devel >= %{freetype_version}
 Requires: fontconfig-devel >= %{fontconfig_version}
+Requires: pkgconfig
 
 %description devel
-Developmental libraries and header files required for developing or
-compiling software which links to the cairo library, which is an open
-source vector graphics library.
+Cairo is a 2D graphics library designed to provide high-quality display
+and print output.
+
+This package contains libraries, header files and developer documentation
+needed for developing software which uses the cairo graphics library.
 
 %prep
 %setup -q
-%patch0 -p1 -b .fix-endianess-mismatch-crasher
-%patch1 -p1 -b .ctype
-%patch2 -p1 -b .alloc-overflow
-%patch3 -p1 -b .rgb555
+%patch0 -p1 -b .repeat-modes
 
 %build
-%configure --enable-warnings --enable-xlib --enable-freetype \
-	--enable-ps --enable-pdf --enable-svg \
+%configure --disable-static 	\
+	--enable-warnings 	\
+	--enable-xlib 		\
+	--enable-freetype 	\
+	--enable-ps 		\
+	--enable-pdf 		\
+	--enable-svg 		\
 	--disable-gtk-doc
 make
 
@@ -72,45 +71,156 @@ rm -rf $RPM_BUILD_ROOT
 
 make install DESTDIR=$RPM_BUILD_ROOT
 rm $RPM_BUILD_ROOT%{_libdir}/*.la
-rm $RPM_BUILD_ROOT%{_libdir}/*.a
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post -p /sbin/ldconfig 
+%post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root,-)
-%doc AUTHORS ChangeLog COPYING INSTALL NEWS README TODO
-
-%{_libdir}/libcairo*.so.* 
+%doc AUTHORS BIBLIOGRAPHY BUGS COPYING COPYING-LGPL-2.1 COPYING-MPL-1.1 NEWS README
+%{_libdir}/libcairo*.so.*
 
 %files devel
 %defattr(-,root,root,-)
+%doc ChangeLog PORTING_GUIDE
 %{_includedir}/*
 %{_libdir}/libcairo*.so
 %{_libdir}/pkgconfig/*
-%{_datadir}/gtk-doc/*
+%{_datadir}/gtk-doc/html/cairo
 
 %changelog
-* Fri Jan 18 2008 Behdad Esfahbod <besfahbo@redhat.com> 1.2.4-5
-- Forgot to add patch to CVS the first time.
-- Add cairo-1.2.4-rgb555.patch
-- Resolves: bug #291361
+* Mon Nov 30 2009 Dennis Gregorovic <dgregor@redhat.com> - 1.8.8-3.1
+- Rebuilt for RHEL 6
 
-* Fri Jan 18 2008 Behdad Esfahbod <besfahbo@redhat.com> 1.2.4-4
-- Add cairo-1.2.4-rgb555.patch
-- Resolves: bug #291361
+* Sun Aug  2 2009 Matthias Clasen <mclasen@redhat.com> - 1.8.8-3
+- Move ChangeLog to -devel to save space
 
-* Wed Nov 28 2007 Behdad Esfahbod <besfahbo@redhat.com> 1.2.4-3
-- Add cairo-1.2.4-alloc-overflow.patch
-- Resolves: bug #387531
+* Fri Jul 24 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.8.8-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_12_Mass_Rebuild
 
-* Fri Jan 19 2007 Ray Strode <rstrode@redhat.com> 1.2.4-2
-- Fix crash when the X client and server don't follow the same
-  byte ordering. Patch by Behdad Esfahbod. 
-  Resolves: bug #222679
+* Wed Jun 17 2009 Matthias Clasen <mclasen@redhat.com> 1.8.8-1
+- Update to 1.8.8
+
+* Wed Apr 08 2009 Adam Jackson <ajax@redhat.com> 1.8.6-3
+- cairo-1.8.6-repeat-modes.patch: Enable the repeat and pad blend modes in
+  the xlib backend to make firefox performance slightly less dire.
+
+* Mon Feb 23 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.8.6-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_11_Mass_Rebuild
+
+* Wed Jan  7 2009 Matthias Clasen <mclasen@redhat.com> 1.8.6-1
+- Update to 1.8.6
+
+* Sun Dec 14 2008 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> 1.8.0-3
+- Rebuild for pkgconfig provides
+
+* Fri Nov 21 2008 Matthias Clasen <mclasen@redhat.com> 1.8.0-2
+- Tweak %%summary and %%documentation
+
+* Thu Sep 25 2008 Behdad Esfahbod <besfahbo@redhat.com> 1.8.0-1
+- Update to 1.8.0
+- Update dep versions
+
+* Mon Sep 22 2008 Behdad Esfahbod <besfahbo@redhat.com> 1.7.6-1
+- Update to 1.7.6
+
+* Mon Aug 11 2008 Matthias Clasen <mclasen@redhat.com> 1.7.4-1
+- Update to 1.7.4
+
+* Wed May 21 2008 Tom "spot" Callaway <tcallawa@redhat.com> 1.6.4-3
+- fix license tag
+
+* Sun May  4 2008 Matthias Clasen <mclasen@redhat.com> 1.6.4-2
+- Fix source url
+
+* Fri Apr 11 2008 Carl Worth <cworth@redhat.com> 1.6.2-1
+- Update to 1.6.2
+
+* Thu Apr 10 2008 Carl Worth <cworth@redhat.com> 1.6.0-1
+- Update to 1.6.0
+
+* Tue Apr  8 2008 Carl Worth <cworth@redhat.com> 1.5.20-1
+- Update to 1.5.20
+
+* Sun Apr  6 2008 Carl Worth <cworth@redhat.com> 1.5.18-1
+- Update to 1.5.18
+
+* Thu Apr  3 2008 Matthias Clasen <mclasen@redhat.com> 1.5.16-1
+- Update to 1.5.16
+
+* Fri Mar 21 2008 Matthias Clasen <mclasen@redhat.com> 1.5.14-1
+- Update to 1.5.14
+
+* Wed Feb 20 2008 Behdad Esfahbod <besfahbo@redhat.com>
+- Point Source to cairographics.org/snapshots.  Change back to /releases
+  when 1.6.0 is out.
+
+* Wed Jan 30 2008 Behdad Esfahbod <besfahbo@redhat.com> 1.5.8-2
+- Remove TODO and ROADMAP as they were removed from tarball upstream.
+
+* Wed Jan 30 2008 Behdad Esfahbod <besfahbo@redhat.com> 1.5.8-1
+- Update to 1.5.8
+
+* Thu Jan 17 2008 Behdad Esfahbod <besfahbo@redhat.com> 1.5.6-1
+- Update to 1.5.6
+
+* Thu Dec  6 2007 Matthias Clasen <mclasen@redhat.com> - 1.5.4-1
+- Update to 1.5.4
+
+* Wed Oct 31 2007 Behdad Esfahbod <besfahbo@redhat.com> 1.5.2-1
+- Update to 1.5.2
+- Switch to external pixman.
+
+* Wed Aug 22 2007 Adam Jackson <ajax@redhat.com> - 1.4.10-2
+- Rebuild for PPC toolchain bug
+
+* Wed Jun 27 2007 Carl Worth <cworth@redhat.com> 1.4.10-1
+- Update to 1.4.10
+
+* Sat Jun 9 2007 Behdad Esfahbod <besfahbo@redhat.com> 1.4.8-1
+- Update to 1.4.8
+
+* Tue May  1 2007 Carl Worth <cworth@redhat.com> 1.4.6-1
+- Update to 1.4.6
+
+* Mon Apr 16 2007 Carl Worth <cworth@redhat.com> 1.4.4-1
+- Update to 1.4.4
+
+* Tue Mar 20 2007 Carl Worth <cworth@redhat.com> 1.4.2-1
+- Update to 1.4.2
+
+* Tue Mar  6 2007 Carl Worth <cworth@redhat.com> 1.4.0-1
+- Update to 1.4.0
+
+* Wed Feb 14 2007 Carl Worth <cworth@redhat.com> 1.3.14-1
+- Update to 1.3.14
+
+* Sat Jan 20 2007 Carl Worth <cworth@redhat.com> 1.3.12-1
+- Update to 1.3.12
+
+* Sat Dec 23 2006 Carl Worth <cworth@redhat.com> 1.3.10-1
+- Update to 1.3.10
+
+* Thu Dec 14 2006 Carl Worth <cworth@redhat.com> 1.3.8-1
+- Update to 1.3.8
+
+* Sat Dec  9 2006 Matthias Clasen <mclasen@redhat.com> 1.3.6-2
+- Small spec file cleanups
+
+* Wed Dec  6 2006 Matthias Clasen <mclasen@redhat.com> 1.3.6-1
+- Update to 1.3.6
+
+* Thu Nov 23 2006 Matthias Clasen <mclasen@redhat.com> 1.3.4-1
+- Update to 1.3.4
+
+* Wed Nov 15 2006 Carl Worth <cworth@redhat.com> 1.3.2-1
+- Update to 1.3.2
+
+* Sun Nov  5 2006 Matthias Clasen <mclasen@redhat.com> 1.2.6-1
+- Update to 1.2.6
 
 * Sun Aug 20 2006 Behdad Esfahbod <besfahbo@redhat.com> 1.2.4-1
 - Update to 1.2.4
@@ -268,7 +378,7 @@ rm -rf $RPM_BUILD_ROOT
 
 * Tue Nov 16 2004 Kristian Høgsberg <krh@redhat.com> - 0.2.0-1
 - Incorporate changes suggested by katzj: Require: ldconfig and run it
-  in %post and %postun, don't pass CFLAGS to make.
+  in %%post and %%postun, don't pass CFLAGS to make.
 
 * Mon Aug  9 2004 Kristian Høgsberg <krh@redhat.com> - 0.2.0-1
 - Update license, explicitly disable glitz.
