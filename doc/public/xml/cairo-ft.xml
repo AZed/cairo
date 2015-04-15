@@ -70,11 +70,15 @@ pre-opened FreeType face. This font can then be used with
 <link linkend="cairo-set-font-face"><function>cairo_set_font_face()</function></link> or <link linkend="cairo-scaled-font-create"><function>cairo_scaled_font_create()</function></link>. The
 <link linkend="cairo-scaled-font-t"><type>cairo_scaled_font_t</type></link> returned from <link linkend="cairo-scaled-font-create"><function>cairo_scaled_font_create()</function></link> is
 also for the FreeType backend and can be used with functions such
-as <link linkend="cairo-ft-scaled-font-lock-face"><function>cairo_ft_scaled_font_lock_face()</function></link>.
+as <link linkend="cairo-ft-scaled-font-lock-face"><function>cairo_ft_scaled_font_lock_face()</function></link>. Note that Cairo may keep a reference
+to the FT_Face alive in a font-cache and the exact lifetime of the reference
+depends highly upon the exact usage pattern and is subject to external
+factors. You must not call <link linkend="FT-Done-Face"><function>FT_Done_Face()</function></link> before the last reference to the
+<link linkend="cairo-font-face-t"><type>cairo_font_face_t</type></link> has been dropped.
 </para>
 <para>
-As an example, here is how one might correctly couple the lifetime of
-the FreeType face object to the <link linkend="cairo-font-face-t--"><type>""</type></link>
+As an example, below is how one might correctly couple the lifetime of
+the FreeType face object to the <link linkend="cairo-font-face-t"><type>cairo_font_face_t</type></link>.
 </para>
 <para>
 <informalexample><programlisting>

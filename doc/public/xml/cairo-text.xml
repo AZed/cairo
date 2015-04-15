@@ -607,9 +607,9 @@ rendered according to the current font face, font size
 This operation has rendering effects similar to <link linkend="cairo-show-glyphs"><function>cairo_show_glyphs()</function></link>
 but, if the target surface supports it, uses the provided text and
 cluster mapping to embed the text for the glyphs shown in the output.
-The <link linkend="cairo-has-show-text-glyphs"><function>cairo_has_show_text_glyphs()</function></link> function can be used to query that.
-If the target does not support it, this function acts like
-<link linkend="cairo-show-glyphs"><function>cairo_show_glyphs()</function></link>.
+If the target does not support the extended attributes, this function
+acts like the basic <link linkend="cairo-show-glyphs"><function>cairo_show_glyphs()</function></link> as if it had been passed
+<parameter>glyphs</parameter> and <parameter>num_glyphs</parameter>.
 </para>
 <para>
 The mapping between <parameter>utf8</parameter> and <parameter>glyphs</parameter> is provided by an array of

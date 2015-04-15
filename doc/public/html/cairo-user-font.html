@@ -289,38 +289,40 @@ as well as complex <em class="firstterm">shaping</em> required for scripts like
 Arabic and Indic.
 </p>
 <p>
-The <em class="parameter"><code>num_glyphs</code></em> argument is preset to -1.  The callback should allocate an
-array for the resulting glyphs (using <code class="function">malloc()</code>), and populate the glyph indices and
-positions (in font space) assuming that the text is to be shown at the
-origin.  Cairo will free the glyph array when done with it, no matter what
-the return value of the callback is.
-</p>
-<p>
-If <em class="parameter"><code>glyphs</code></em> initially points to a non-<code class="literal">NULL</code> value, that array can be used
-as a glyph buffer, and <em class="parameter"><code>num_glyphs</code></em> points to the number of glyph
-entries available there.  If the provided glyph array is too short for
+The <em class="parameter"><code>num_glyphs</code></em> argument is preset to the number of glyph entries available
+in the <em class="parameter"><code>glyphs</code></em> buffer. If the <em class="parameter"><code>glyphs</code></em> buffer is <a
+href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"
+><code class="literal">NULL</code></a>, the value of
+<em class="parameter"><code>num_glyphs</code></em> will be zero.  If the provided glyph array is too short for
 the conversion (or for convenience), a new glyph array may be allocated
 using <a class="link" href="cairo-text.html#cairo-glyph-allocate" title="cairo_glyph_allocate ()"><code class="function">cairo_glyph_allocate()</code></a> and placed in <em class="parameter"><code>glyphs</code></em>.  Upon return,
-<em class="parameter"><code>num_glyphs</code></em> should contain the number of generated glyphs.
-If the value <em class="parameter"><code>glyphs</code></em> points at has changed after the call, cairo will
-free the allocated glyph array using <a class="link" href="cairo-text.html#cairo-glyph-free" title="cairo_glyph_free ()"><code class="function">cairo_glyph_free()</code></a>.
+<em class="parameter"><code>num_glyphs</code></em> should contain the number of generated glyphs.  If the value
+<em class="parameter"><code>glyphs</code></em> points at has changed after the call, the caller will free the
+allocated glyph array using <a class="link" href="cairo-text.html#cairo-glyph-free" title="cairo_glyph_free ()"><code class="function">cairo_glyph_free()</code></a>.
+The callback should populate the glyph indices and positions (in font space)
+assuming that the text is to be shown at the origin.
 </p>
 <p>
-If <em class="parameter"><code>clusters</code></em> is not <code class="literal">NULL</code>, <em class="parameter"><code>num_clusters</code></em> and <em class="parameter"><code>cluster_flags</code></em> are also non-<code class="literal">NULL</code>,
-and cluster mapping should be computed.
-The semantics of how cluster array allocation works is similar to the glyph
-array.  That is,
-if <em class="parameter"><code>clusters</code></em> initially points to a non-<code class="literal">NULL</code> value, that array may be used
+If <em class="parameter"><code>clusters</code></em> is not <a
+href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"
+><code class="literal">NULL</code></a>, <em class="parameter"><code>num_clusters</code></em> and <em class="parameter"><code>cluster_flags</code></em> are also
+non-<a
+href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"
+><code class="literal">NULL</code></a>, and cluster mapping should be computed. The semantics of how
+cluster array allocation works is similar to the glyph array.  That is,
+if <em class="parameter"><code>clusters</code></em> initially points to a non-<a
+href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"
+><code class="literal">NULL</code></a> value, that array may be used
 as a cluster buffer, and <em class="parameter"><code>num_clusters</code></em> points to the number of cluster
 entries available there.  If the provided cluster array is too short for
 the conversion (or for convenience), a new cluster array may be allocated
 using <a class="link" href="cairo-text.html#cairo-text-cluster-allocate" title="cairo_text_cluster_allocate ()"><code class="function">cairo_text_cluster_allocate()</code></a> and placed in <em class="parameter"><code>clusters</code></em>.  Upon return,
 <em class="parameter"><code>num_clusters</code></em> should contain the number of generated clusters.
-If the value <em class="parameter"><code>clusters</code></em> points at has changed after the call, cairo will
-free the allocated cluster array using <a class="link" href="cairo-text.html#cairo-text-cluster-free" title="cairo_text_cluster_free ()"><code class="function">cairo_text_cluster_free()</code></a>.
+If the value <em class="parameter"><code>clusters</code></em> points at has changed after the call, the caller
+will free the allocated cluster array using <a class="link" href="cairo-text.html#cairo-text-cluster-free" title="cairo_text_cluster_free ()"><code class="function">cairo_text_cluster_free()</code></a>.
 </p>
 <p>
-The callback is optional.  If not set, or if <em class="parameter"><code>num_glyphs</code></em> is negative upon
+The callback is optional.  If <em class="parameter"><code>num_glyphs</code></em> is negative upon
 the callback returning, the unicode_to_glyph callback
 is tried.  See <a class="link" href="cairo-user-font.html#cairo-user-scaled-font-unicode-to-glyph-func-t" title="cairo_user_scaled_font_unicode_to_glyph_func_t ()"><span class="type">cairo_user_scaled_font_unicode_to_glyph_func_t</span></a>.
 </p>
@@ -365,7 +367,9 @@ glyph value for other purposes.</p>
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>clusters</code></em> :</span></p></td>
-<td> pointer to array of cluster mapping information to fill, or <code class="literal">NULL</code>
+<td> pointer to array of cluster mapping information to fill, or <a
+href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"
+><code class="literal">NULL</code></a>
 </td>
 </tr>
 <tr>
@@ -519,7 +523,9 @@ is created from it.</p>
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>init_func</code></em> :</span></p></td>
-<td> The init callback, or <code class="literal">NULL</code>
+<td> The init callback, or <a
+href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"
+><code class="literal">NULL</code></a>
 </td>
 </tr>
 </tbody>
@@ -548,7 +554,9 @@ Gets the scaled-font initialization function of a user-font.</p>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td> The init callback of <em class="parameter"><code>font_face</code></em>
-or <code class="literal">NULL</code> if none set.
+or <a
+href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"
+><code class="literal">NULL</code></a> if none set or an error has occurred.
 
 </td>
 </tr>
@@ -575,7 +583,9 @@ is created from it.
 </p>
 <p>
 The render_glyph callback is the only mandatory callback of a user-font.
-If the callback is <code class="literal">NULL</code> and a glyph is tried to be rendered using
+If the callback is <a
+href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"
+><code class="literal">NULL</code></a> and a glyph is tried to be rendered using
 <em class="parameter"><code>font_face</code></em>, a <a class="link" href="cairo-error-status.html#CAIRO-STATUS-USER-FONT-ERROR:CAPS"><code class="literal">CAIRO_STATUS_USER_FONT_ERROR</code></a> will occur.</p>
 <p>
 
@@ -590,7 +600,9 @@ If the callback is <code class="literal">NULL</code> and a glyph is tried to be 
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>render_glyph_func</code></em> :</span></p></td>
-<td> The render_glyph callback, or <code class="literal">NULL</code>
+<td> The render_glyph callback, or <a
+href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"
+><code class="literal">NULL</code></a>
 </td>
 </tr>
 </tbody>
@@ -619,7 +631,9 @@ Gets the glyph rendering function of a user-font.</p>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td> The render_glyph callback of <em class="parameter"><code>font_face</code></em>
-or <code class="literal">NULL</code> if none set.
+or <a
+href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"
+><code class="literal">NULL</code></a> if none set or an error has occurred.
 
 </td>
 </tr>
@@ -656,7 +670,9 @@ is created from it.</p>
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>unicode_to_glyph_func</code></em> :</span></p></td>
-<td> The unicode_to_glyph callback, or <code class="literal">NULL</code>
+<td> The unicode_to_glyph callback, or <a
+href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"
+><code class="literal">NULL</code></a>
 </td>
 </tr>
 </tbody>
@@ -685,7 +701,9 @@ Gets the unicode-to-glyph conversion function of a user-font.</p>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td> The unicode_to_glyph callback of <em class="parameter"><code>font_face</code></em>
-or <code class="literal">NULL</code> if none set.
+or <a
+href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"
+><code class="literal">NULL</code></a> if none set or an error occurred.
 
 </td>
 </tr>
@@ -722,7 +740,9 @@ is created from it.</p>
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>text_to_glyphs_func</code></em> :</span></p></td>
-<td> The text_to_glyphs callback, or <code class="literal">NULL</code>
+<td> The text_to_glyphs callback, or <a
+href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"
+><code class="literal">NULL</code></a>
 </td>
 </tr>
 </tbody>
@@ -751,7 +771,9 @@ Gets the text-to-glyphs conversion function of a user-font.</p>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td> The text_to_glyphs callback of <em class="parameter"><code>font_face</code></em>
-or <code class="literal">NULL</code> if none set.
+or <a
+href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"
+><code class="literal">NULL</code></a> if none set or an error occurred.
 
 </td>
 </tr>

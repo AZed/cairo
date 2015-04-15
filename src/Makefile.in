@@ -35,7 +35,7 @@
 # See how pdf_operators or font_subset are handled.
 #
 # The sources are picked up according to the configured features
-# by the generated file Makefile.am.config or Makefile.win32.config.
+# by the generated file Makefile.am.features or Makefile.win32.features.
 #
 # These are a few special source files.  Those are not included in this
 # file to not confuse build systems.  Each build system must handle them
@@ -172,6 +172,7 @@ check_PROGRAMS = check-link$(EXEEXT)
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/build/aclocal.cairo.m4 \
+	$(top_srcdir)/build/aclocal.dolt.m4 \
 	$(top_srcdir)/build/aclocal.enable.m4 \
 	$(top_srcdir)/build/aclocal.float.m4 \
 	$(top_srcdir)/build/aclocal.gtk-doc.m4 \
@@ -208,9 +209,9 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 am__libcairo_la_SOURCES_DIST = cairo.h cairo-deprecated.h cairo-xlib.h \
 	cairo-xlib-xrender.h cairo-xcb.h cairo-xcb-xrender.h \
-	cairo-quartz.h cairo-win32.h cairo-os2.h cairo-beos.h \
-	cairo-glitz.h cairo-directfb.h cairo-ft.h cairo-ps.h \
-	cairo-pdf.h cairo-svg.h cairoint.h \
+	cairo-quartz.h cairo-quartz-image.h cairo-win32.h cairo-os2.h \
+	cairo-beos.h cairo-glitz.h cairo-directfb.h cairo-ft.h \
+	cairo-ps.h cairo-pdf.h cairo-svg.h cairoint.h \
 	cairo-analysis-surface-private.h cairo-arc-private.h \
 	cairo-atomic-private.h cairo-cache-private.h \
 	cairo-clip-private.h cairo-compiler-private.h \
@@ -241,7 +242,8 @@ am__libcairo_la_SOURCES_DIST = cairo.h cairo-deprecated.h cairo-xlib.h \
 	cairo-analysis-surface.c cairo-arc.c cairo-array.c \
 	cairo-atomic.c cairo-base85-stream.c cairo-bentley-ottmann.c \
 	cairo.c cairo-cache.c cairo-clip.c cairo-color.c cairo-debug.c \
-	cairo-fixed.c cairo-font-face.c cairo-font-options.c \
+	cairo-fixed.c cairo-font-face.c cairo-font-face-twin.c \
+	cairo-font-face-twin-data.c cairo-font-options.c \
 	cairo-freelist.c cairo-gstate.c cairo-hash.c cairo-hull.c \
 	cairo-image-surface.c cairo-lzw.c cairo-matrix.c \
 	cairo-meta-surface.c cairo-misc.c cairo-mutex.c \
@@ -259,52 +261,54 @@ am__libcairo_la_SOURCES_DIST = cairo.h cairo-deprecated.h cairo-xlib.h \
 	cairo-pdf-operators.c cairo-xlib-display.c cairo-xlib-screen.c \
 	cairo-xlib-surface.c cairo-xlib-visual.c cairo-xcb-surface.c \
 	cairo-quartz-surface.c cairo-quartz-font.c \
-	cairo-win32-surface.c cairo-win32-printing-surface.c \
-	cairo-win32-font.c cairo-os2-surface.c cairo-png.c \
-	cairo-glitz-surface.c cairo-directfb-surface.c cairo-ft-font.c \
-	cairo-ps-surface.c cairo-pdf-surface.c cairo-deflate-stream.c \
-	cairo-svg-surface.c test-fallback-surface.c \
-	test-meta-surface.c test-paginated-surface.c cairo-version.h \
-	cairo-features.h
+	cairo-quartz-image-surface.c cairo-win32-surface.c \
+	cairo-win32-printing-surface.c cairo-win32-font.c \
+	cairo-os2-surface.c cairo-png.c cairo-glitz-surface.c \
+	cairo-directfb-surface.c cairo-ft-font.c cairo-ps-surface.c \
+	cairo-pdf-surface.c cairo-deflate-stream.c cairo-svg-surface.c \
+	test-fallback-surface.c test-meta-surface.c \
+	test-paginated-surface.c cairo-version.h cairo-features.h
 am__objects_1 =
 @CAIRO_HAS_XLIB_SURFACE_TRUE@am__objects_2 = $(am__objects_1)
 @CAIRO_HAS_XLIB_XRENDER_SURFACE_TRUE@am__objects_3 = $(am__objects_1)
 @CAIRO_HAS_XCB_SURFACE_TRUE@am__objects_4 = $(am__objects_1)
 @CAIRO_HAS_QUARTZ_SURFACE_TRUE@am__objects_5 = $(am__objects_1)
-@CAIRO_HAS_WIN32_SURFACE_TRUE@am__objects_6 = $(am__objects_1)
-@CAIRO_HAS_OS2_SURFACE_TRUE@am__objects_7 = $(am__objects_1)
-@CAIRO_HAS_BEOS_SURFACE_TRUE@am__objects_8 = $(am__objects_1)
-@CAIRO_HAS_GLITZ_SURFACE_TRUE@am__objects_9 = $(am__objects_1)
-@CAIRO_HAS_DIRECTFB_SURFACE_TRUE@am__objects_10 = $(am__objects_1)
-@CAIRO_HAS_FT_FONT_TRUE@am__objects_11 = $(am__objects_1)
-@CAIRO_HAS_PS_SURFACE_TRUE@am__objects_12 = $(am__objects_1)
-@CAIRO_HAS_PDF_SURFACE_TRUE@am__objects_13 = $(am__objects_1)
-@CAIRO_HAS_SVG_SURFACE_TRUE@am__objects_14 = $(am__objects_1)
-am__objects_15 = $(am__objects_1) $(am__objects_2) $(am__objects_3) \
+@CAIRO_HAS_QUARTZ_IMAGE_SURFACE_TRUE@am__objects_6 = $(am__objects_1)
+@CAIRO_HAS_WIN32_SURFACE_TRUE@am__objects_7 = $(am__objects_1)
+@CAIRO_HAS_OS2_SURFACE_TRUE@am__objects_8 = $(am__objects_1)
+@CAIRO_HAS_BEOS_SURFACE_TRUE@am__objects_9 = $(am__objects_1)
+@CAIRO_HAS_GLITZ_SURFACE_TRUE@am__objects_10 = $(am__objects_1)
+@CAIRO_HAS_DIRECTFB_SURFACE_TRUE@am__objects_11 = $(am__objects_1)
+@CAIRO_HAS_FT_FONT_TRUE@am__objects_12 = $(am__objects_1)
+@CAIRO_HAS_PS_SURFACE_TRUE@am__objects_13 = $(am__objects_1)
+@CAIRO_HAS_PDF_SURFACE_TRUE@am__objects_14 = $(am__objects_1)
+@CAIRO_HAS_SVG_SURFACE_TRUE@am__objects_15 = $(am__objects_1)
+am__objects_16 = $(am__objects_1) $(am__objects_2) $(am__objects_3) \
 	$(am__objects_4) $(am__objects_5) $(am__objects_1) \
-	$(am__objects_1) $(am__objects_6) $(am__objects_1) \
-	$(am__objects_7) $(am__objects_8) $(am__objects_1) \
-	$(am__objects_9) $(am__objects_10) $(am__objects_11) \
-	$(am__objects_12) $(am__objects_13) $(am__objects_14)
-am__objects_16 = $(am__objects_1) $(am__objects_1)
-@CAIRO_HAS_TEST_SURFACES_TRUE@am__objects_17 = $(am__objects_1)
-am__objects_18 = $(am__objects_16) $(am__objects_2) $(am__objects_1) \
+	$(am__objects_6) $(am__objects_7) $(am__objects_1) \
+	$(am__objects_8) $(am__objects_9) $(am__objects_1) \
+	$(am__objects_10) $(am__objects_11) $(am__objects_12) \
+	$(am__objects_13) $(am__objects_14) $(am__objects_15)
+am__objects_17 = $(am__objects_1) $(am__objects_1)
+@CAIRO_HAS_TEST_SURFACES_TRUE@am__objects_18 = $(am__objects_1)
+am__objects_19 = $(am__objects_17) $(am__objects_2) $(am__objects_1) \
 	$(am__objects_1) $(am__objects_5) $(am__objects_1) \
-	$(am__objects_1) $(am__objects_6) $(am__objects_1) \
-	$(am__objects_7) $(am__objects_1) $(am__objects_1) \
-	$(am__objects_9) $(am__objects_1) $(am__objects_11) \
-	$(am__objects_12) $(am__objects_13) $(am__objects_14) \
-	$(am__objects_17)
-am__objects_19 = cairo-cff-subset.lo cairo-scaled-font-subsets.lo \
+	$(am__objects_1) $(am__objects_7) $(am__objects_1) \
+	$(am__objects_8) $(am__objects_1) $(am__objects_1) \
+	$(am__objects_10) $(am__objects_1) $(am__objects_12) \
+	$(am__objects_13) $(am__objects_14) $(am__objects_15) \
+	$(am__objects_18)
+am__objects_20 = cairo-cff-subset.lo cairo-scaled-font-subsets.lo \
 	cairo-truetype-subset.lo cairo-type1-fallback.lo \
 	cairo-type1-subset.lo cairo-type3-glyph-surface.lo
-am__objects_20 = cairo-pdf-operators.lo
-am__objects_21 = cairo-analysis-surface.lo cairo-arc.lo cairo-array.lo \
+am__objects_21 = cairo-pdf-operators.lo
+am__objects_22 = cairo-analysis-surface.lo cairo-arc.lo cairo-array.lo \
 	cairo-atomic.lo cairo-base85-stream.lo \
 	cairo-bentley-ottmann.lo cairo.lo cairo-cache.lo cairo-clip.lo \
 	cairo-color.lo cairo-debug.lo cairo-fixed.lo \
-	cairo-font-face.lo cairo-font-options.lo cairo-freelist.lo \
-	cairo-gstate.lo cairo-hash.lo cairo-hull.lo \
+	cairo-font-face.lo cairo-font-face-twin.lo \
+	cairo-font-face-twin-data.lo cairo-font-options.lo \
+	cairo-freelist.lo cairo-gstate.lo cairo-hash.lo cairo-hull.lo \
 	cairo-image-surface.lo cairo-lzw.lo cairo-matrix.lo \
 	cairo-meta-surface.lo cairo-misc.lo cairo-mutex.lo \
 	cairo-output-stream.lo cairo-paginated-surface.lo \
@@ -315,50 +319,53 @@ am__objects_21 = cairo-analysis-surface.lo cairo-arc.lo cairo-array.lo \
 	cairo-slope.lo cairo-spline.lo cairo-stroke-style.lo \
 	cairo-surface.lo cairo-surface-fallback.lo cairo-system.lo \
 	cairo-traps.lo cairo-unicode.lo cairo-user-font.lo \
-	cairo-version.lo cairo-wideint.lo $(am__objects_19) \
-	$(am__objects_20)
-am__objects_22 = cairo-xlib-display.lo cairo-xlib-screen.lo \
+	cairo-version.lo cairo-wideint.lo $(am__objects_20) \
+	$(am__objects_21)
+am__objects_23 = cairo-xlib-display.lo cairo-xlib-screen.lo \
 	cairo-xlib-surface.lo cairo-xlib-visual.lo
-@CAIRO_HAS_XLIB_SURFACE_TRUE@am__objects_23 = $(am__objects_22)
-am__objects_24 = cairo-xcb-surface.lo
-@CAIRO_HAS_XCB_SURFACE_TRUE@am__objects_25 = $(am__objects_24)
-am__objects_26 = cairo-quartz-surface.lo
-@CAIRO_HAS_QUARTZ_SURFACE_TRUE@am__objects_27 = $(am__objects_26)
-am__objects_28 = cairo-quartz-font.lo
-@CAIRO_HAS_QUARTZ_FONT_TRUE@am__objects_29 = $(am__objects_28)
-am__objects_30 = cairo-win32-surface.lo \
+@CAIRO_HAS_XLIB_SURFACE_TRUE@am__objects_24 = $(am__objects_23)
+am__objects_25 = cairo-xcb-surface.lo
+@CAIRO_HAS_XCB_SURFACE_TRUE@am__objects_26 = $(am__objects_25)
+am__objects_27 = cairo-quartz-surface.lo
+@CAIRO_HAS_QUARTZ_SURFACE_TRUE@am__objects_28 = $(am__objects_27)
+am__objects_29 = cairo-quartz-font.lo
+@CAIRO_HAS_QUARTZ_FONT_TRUE@am__objects_30 = $(am__objects_29)
+am__objects_31 = cairo-quartz-image-surface.lo
+@CAIRO_HAS_QUARTZ_IMAGE_SURFACE_TRUE@am__objects_32 =  \
+@CAIRO_HAS_QUARTZ_IMAGE_SURFACE_TRUE@	$(am__objects_31)
+am__objects_33 = cairo-win32-surface.lo \
 	cairo-win32-printing-surface.lo
-@CAIRO_HAS_WIN32_SURFACE_TRUE@am__objects_31 = $(am__objects_30)
-am__objects_32 = cairo-win32-font.lo
-@CAIRO_HAS_WIN32_FONT_TRUE@am__objects_33 = $(am__objects_32)
-am__objects_34 = cairo-os2-surface.lo
-@CAIRO_HAS_OS2_SURFACE_TRUE@am__objects_35 = $(am__objects_34)
-am__objects_36 = cairo-png.lo
-@CAIRO_HAS_PNG_FUNCTIONS_TRUE@am__objects_37 = $(am__objects_36)
-am__objects_38 = cairo-glitz-surface.lo
-@CAIRO_HAS_GLITZ_SURFACE_TRUE@am__objects_39 = $(am__objects_38)
-am__objects_40 = cairo-directfb-surface.lo
-@CAIRO_HAS_DIRECTFB_SURFACE_TRUE@am__objects_41 = $(am__objects_40)
-am__objects_42 = cairo-ft-font.lo
-@CAIRO_HAS_FT_FONT_TRUE@am__objects_43 = $(am__objects_42)
-am__objects_44 = cairo-ps-surface.lo
-@CAIRO_HAS_PS_SURFACE_TRUE@am__objects_45 = $(am__objects_44)
-am__objects_46 = cairo-pdf-surface.lo cairo-deflate-stream.lo
-@CAIRO_HAS_PDF_SURFACE_TRUE@am__objects_47 = $(am__objects_46)
-am__objects_48 = cairo-svg-surface.lo
-@CAIRO_HAS_SVG_SURFACE_TRUE@am__objects_49 = $(am__objects_48)
-am__objects_50 = test-fallback-surface.lo test-meta-surface.lo \
+@CAIRO_HAS_WIN32_SURFACE_TRUE@am__objects_34 = $(am__objects_33)
+am__objects_35 = cairo-win32-font.lo
+@CAIRO_HAS_WIN32_FONT_TRUE@am__objects_36 = $(am__objects_35)
+am__objects_37 = cairo-os2-surface.lo
+@CAIRO_HAS_OS2_SURFACE_TRUE@am__objects_38 = $(am__objects_37)
+am__objects_39 = cairo-png.lo
+@CAIRO_HAS_PNG_FUNCTIONS_TRUE@am__objects_40 = $(am__objects_39)
+am__objects_41 = cairo-glitz-surface.lo
+@CAIRO_HAS_GLITZ_SURFACE_TRUE@am__objects_42 = $(am__objects_41)
+am__objects_43 = cairo-directfb-surface.lo
+@CAIRO_HAS_DIRECTFB_SURFACE_TRUE@am__objects_44 = $(am__objects_43)
+am__objects_45 = cairo-ft-font.lo
+@CAIRO_HAS_FT_FONT_TRUE@am__objects_46 = $(am__objects_45)
+am__objects_47 = cairo-ps-surface.lo
+@CAIRO_HAS_PS_SURFACE_TRUE@am__objects_48 = $(am__objects_47)
+am__objects_49 = cairo-pdf-surface.lo cairo-deflate-stream.lo
+@CAIRO_HAS_PDF_SURFACE_TRUE@am__objects_50 = $(am__objects_49)
+am__objects_51 = cairo-svg-surface.lo
+@CAIRO_HAS_SVG_SURFACE_TRUE@am__objects_52 = $(am__objects_51)
+am__objects_53 = test-fallback-surface.lo test-meta-surface.lo \
 	test-paginated-surface.lo
-@CAIRO_HAS_TEST_SURFACES_TRUE@am__objects_51 = $(am__objects_50)
-am__objects_52 = $(am__objects_21) $(am__objects_23) $(am__objects_1) \
-	$(am__objects_25) $(am__objects_27) $(am__objects_29) \
-	$(am__objects_1) $(am__objects_31) $(am__objects_33) \
-	$(am__objects_35) $(am__objects_1) $(am__objects_37) \
-	$(am__objects_39) $(am__objects_41) $(am__objects_43) \
-	$(am__objects_45) $(am__objects_47) $(am__objects_49) \
-	$(am__objects_51)
-am_libcairo_la_OBJECTS = $(am__objects_15) $(am__objects_18) \
-	$(am__objects_52)
+@CAIRO_HAS_TEST_SURFACES_TRUE@am__objects_54 = $(am__objects_53)
+am__objects_55 = $(am__objects_22) $(am__objects_24) $(am__objects_1) \
+	$(am__objects_26) $(am__objects_28) $(am__objects_30) \
+	$(am__objects_32) $(am__objects_34) $(am__objects_36) \
+	$(am__objects_38) $(am__objects_1) $(am__objects_40) \
+	$(am__objects_42) $(am__objects_44) $(am__objects_46) \
+	$(am__objects_48) $(am__objects_50) $(am__objects_52) \
+	$(am__objects_54)
+am_libcairo_la_OBJECTS = $(am__objects_16) $(am__objects_19) \
+	$(am__objects_55)
 libcairo_la_OBJECTS = $(am_libcairo_la_OBJECTS)
 libcairo_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -371,9 +378,6 @@ depcomp = $(SHELL) $(top_srcdir)/build/depcomp
 am__depfiles_maybe = depfiles
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
-	--mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
-	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
@@ -384,9 +388,9 @@ pkgconfigDATA_INSTALL = $(INSTALL_DATA)
 DATA = $(pkgconfig_DATA)
 am__cairoinclude_HEADERS_DIST = cairo.h cairo-deprecated.h \
 	cairo-xlib.h cairo-xlib-xrender.h cairo-xcb.h \
-	cairo-xcb-xrender.h cairo-quartz.h cairo-win32.h cairo-os2.h \
-	cairo-beos.h cairo-glitz.h cairo-directfb.h cairo-ft.h \
-	cairo-ps.h cairo-pdf.h cairo-svg.h \
+	cairo-xcb-xrender.h cairo-quartz.h cairo-quartz-image.h \
+	cairo-win32.h cairo-os2.h cairo-beos.h cairo-glitz.h \
+	cairo-directfb.h cairo-ft.h cairo-ps.h cairo-pdf.h cairo-svg.h \
 	$(top_srcdir)/cairo-version.h
 cairoincludeHEADERS_INSTALL = $(INSTALL_HEADER)
 nodist_cairoincludeHEADERS_INSTALL = $(INSTALL_HEADER)
@@ -430,6 +434,7 @@ CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
+DOLT_BASH = @DOLT_BASH@
 DSYMUTIL = @DSYMUTIL@
 ECHO = @ECHO@
 ECHO_C = @ECHO_C@
@@ -467,8 +472,12 @@ LIBOBJS = @LIBOBJS@
 LIBRSVG_CFLAGS = @LIBRSVG_CFLAGS@
 LIBRSVG_LIBS = @LIBRSVG_LIBS@
 LIBS = @LIBS@
+LIBSPECTRE_CFLAGS = @LIBSPECTRE_CFLAGS@
+LIBSPECTRE_LIBS = @LIBSPECTRE_LIBS@
 LIBTOOL = @LIBTOOL@
 LN_S = @LN_S@
+LTCOMPILE = @LTCOMPILE@
+LTCXXCOMPILE = @LTCXXCOMPILE@
 LTLIBOBJS = @LTLIBOBJS@
 LTP = @LTP@
 LTP_GENHTML = @LTP_GENHTML@
@@ -494,6 +503,8 @@ SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 SHTOOL = @SHTOOL@
 STRIP = @STRIP@
+VALGRIND_CFLAGS = @VALGRIND_CFLAGS@
+VALGRIND_LIBS = @VALGRIND_LIBS@
 VERSION = @VERSION@
 XARGS = @XARGS@
 XMKMF = @XMKMF@
@@ -529,6 +540,8 @@ dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 glitz_CFLAGS = @glitz_CFLAGS@
 glitz_LIBS = @glitz_LIBS@
+gtk_CFLAGS = @gtk_CFLAGS@
+gtk_LIBS = @gtk_LIBS@
 host = @host@
 host_alias = @host_alias@
 host_cpu = @host_cpu@
@@ -569,7 +582,7 @@ xlib_xrender_CFLAGS = @xlib_xrender_CFLAGS@
 xlib_xrender_LIBS = @xlib_xrender_LIBS@
 BUILT_SOURCES = cairo-features.h cairo-supported-features.h
 CLEANFILES = *.i *.s *.gch $(EXTRA_LTLIBRARIES) $(EXTRA_PROGRAMS) \
-	$(check_PROGRAMS) cairo.def
+	$(check_PROGRAMS) cairo.def headers-standalone
 DISTCLEANFILES = $(BUILT_SOURCES)
 EXTRA_DIST = Makefile.win32 Makefile.win32.features \
 	cairo-supported-features.h $(TESTS_SH) \
@@ -599,7 +612,8 @@ cairo_private = cairoint.h cairo-analysis-surface-private.h \
 cairo_sources = cairo-analysis-surface.c cairo-arc.c cairo-array.c \
 	cairo-atomic.c cairo-base85-stream.c cairo-bentley-ottmann.c \
 	cairo.c cairo-cache.c cairo-clip.c cairo-color.c cairo-debug.c \
-	cairo-fixed.c cairo-font-face.c cairo-font-options.c \
+	cairo-fixed.c cairo-font-face.c cairo-font-face-twin.c \
+	cairo-font-face-twin-data.c cairo-font-options.c \
 	cairo-freelist.c cairo-gstate.c cairo-hash.c cairo-hull.c \
 	cairo-image-surface.c cairo-lzw.c cairo-matrix.c \
 	cairo-meta-surface.c cairo-misc.c cairo-mutex.c \
@@ -681,8 +695,8 @@ cairo_xcb_sources = cairo-xcb-surface.c
 cairo_quartz_headers = cairo-quartz.h
 cairo_quartz_private = cairo-quartz-private.h
 cairo_quartz_sources = cairo-quartz-surface.c
-cairo_quratz_image_headers = cairo-quartz-image.h
-cairo_quratz_image_sources = cairo-quartz-image-surface.c
+cairo_quartz_image_headers = cairo-quartz-image.h
+cairo_quartz_image_sources = cairo-quartz-image-surface.c
 cairo_quartz_font_sources = cairo-quartz-font.c
 cairo_win32_headers = cairo-win32.h
 cairo_win32_private = cairo-win32-private.h
@@ -955,6 +969,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cairo-deflate-stream.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cairo-directfb-surface.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cairo-fixed.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cairo-font-face-twin-data.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cairo-font-face-twin.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cairo-font-face.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cairo-font-options.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cairo-freelist.Plo@am__quote@
@@ -985,6 +1001,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cairo-polygon.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cairo-ps-surface.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cairo-quartz-font.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cairo-quartz-image-surface.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cairo-quartz-surface.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cairo-rectangle.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cairo-region.Plo@am__quote@
@@ -1405,12 +1422,13 @@ uno:
 	@echo Checking enabled sources with uno checker
 	cd $(srcdir); $(UNO) $(PREPROCESS_ARGS) -DHAVE_CONFIG_H -U__GNUC__ $(enabled_cairo_sources)
 
-headers-standalone:
+headers-standalone: $(enabled_cairo_headers) $(enabled_cairo_private)
 	@echo Checking that enabled public/private headers can be compiled standalone
 	@status=true; for f in $(enabled_cairo_headers) $(enabled_cairo_private); do \
 		echo $(COMPILE) -o /dev/null $(srcdir)/$$f; \
 		$(COMPILE) -o /dev/null $(srcdir)/$$f || status=false; \
 	done; $$status
+	@touch $@
 
 analysis: all headers-standalone sparse splint uno
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

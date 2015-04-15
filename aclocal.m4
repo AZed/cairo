@@ -7553,6 +7553,7 @@ AC_SUBST([am__untar])
 ]) # _AM_PROG_TAR
 
 m4_include([build/aclocal.cairo.m4])
+m4_include([build/aclocal.dolt.m4])
 m4_include([build/aclocal.enable.m4])
 m4_include([build/aclocal.float.m4])
 m4_include([build/aclocal.gtk-doc.m4])

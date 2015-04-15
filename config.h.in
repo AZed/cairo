@@ -29,6 +29,9 @@
    */
 #undef CAIRO_CAN_TEST_WIN32_PRINTING_SURFACE
 
+/* Define to 1 if libspectre is available */
+#undef CAIRO_HAS_SPECTRE
+
 /* Define to 1 to enable cairo's test surfaces feature */
 #undef CAIRO_HAS_TEST_SURFACES
 
@@ -94,6 +97,12 @@
 /* Define to 1 if you have the `link' function. */
 #undef HAVE_LINK
 
+/* Define to 1 if you have the Valgrind lockdep tool */
+#undef HAVE_LOCKDEP
+
+/* Define to 1 if you have the Valgrind memfault tool */
+#undef HAVE_MEMFAULT
+
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
 
@@ -156,6 +165,9 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
+
+/* Define to 1 if you have Valgrind */
+#undef HAVE_VALGRIND
 
 /* Define to 1 if you have the `vasnprintf' function. */
 #undef HAVE_VASNPRINTF

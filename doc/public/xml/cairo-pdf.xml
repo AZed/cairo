@@ -72,7 +72,10 @@ to <parameter>filename</parameter>.</para>
 
 </para><variablelist role="params">
 <varlistentry><term><parameter>filename</parameter>&nbsp;:</term>
-<listitem><simpara> a filename for the PDF output (must be writable)
+<listitem><simpara> a filename for the PDF output (must be writable), <link linkend="NULL:CAPS"><literal>NULL</literal></link> may be
+           used to specify no output. This will generate a PDF surface that
+           may be queried and used as a source, without generating a
+           temporary file.
 </simpara></listitem></varlistentry>
 <varlistentry><term><parameter>width_in_points</parameter>&nbsp;:</term>
 <listitem><simpara> width of the surface, in points (1 point == 1/72.0 inch)
@@ -104,7 +107,10 @@ incrementally to the stream represented by <parameter>write_func</parameter> and
 
 </para><variablelist role="params">
 <varlistentry><term><parameter>write_func</parameter>&nbsp;:</term>
-<listitem><simpara> a <link linkend="cairo-write-func-t"><type>cairo_write_func_t</type></link> to accept the output data
+<listitem><simpara> a <link linkend="cairo-write-func-t"><type>cairo_write_func_t</type></link> to accept the output data, may be <link linkend="NULL:CAPS"><literal>NULL</literal></link>
+             to indicate a no-op <parameter>write_func</parameter>. With a no-op <parameter>write_func</parameter>,
+             the surface may be queried or used as a source without
+             generating any temporary files.
 </simpara></listitem></varlistentry>
 <varlistentry><term><parameter>closure</parameter>&nbsp;:</term>
 <listitem><simpara> the closure argument for <parameter>write_func</parameter>

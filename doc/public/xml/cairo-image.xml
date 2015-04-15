@@ -270,7 +270,8 @@ inspection or modification.</para>
 <listitem><simpara> a <link linkend="cairo-image-surface-t"><type>cairo_image_surface_t</type></link>
 </simpara></listitem></varlistentry>
 <varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a pointer to the image data of this surface or <link linkend="NULL:CAPS"><literal>NULL</literal></link>
-if <parameter>surface</parameter> is not an image surface.
+if <parameter>surface</parameter> is not an image surface, or if <link linkend="cairo-surface-finish"><function>cairo_surface_finish()</function></link>
+has been called.
 
 </simpara></listitem></varlistentry>
 </variablelist><para role="since">Since  1.2

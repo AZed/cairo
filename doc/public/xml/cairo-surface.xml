@@ -761,11 +761,7 @@ Note: Even if this function returns <link linkend="FALSE:CAPS"><literal>FALSE</l
 still succeed.  It just will
 act like a <link linkend="cairo-show-glyphs"><function>cairo_show_glyphs()</function></link> operation.  Users can use this
 function to avoid computing UTF-8 text and cluster mapping if the
-target surface does not use it.
-</para>
-<para>
-There is a convenience function for this that takes a <link linkend="cairo-t"><type>cairo_t</type></link>,
-namely <link linkend="cairo-has-show-text-glyphs"><function>cairo_has_show_text_glyphs()</function></link>.</para>
+target surface does not use it.</para>
 <para>
 
 </para><variablelist role="params">
