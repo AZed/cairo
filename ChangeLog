@@ -1,3 +1,91 @@
+commit 5bc6fd71398f8aa902fcffe2da5d1e70fb94aa8a
+Author: Carl Worth <cworth@cworth.org>
+Date:   Fri Apr 11 09:52:28 2008 -0700
+
+    Increment version to 1.6.2
+
+ configure.in |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 0c32497c3447d6d02d45a14ff4c400b6d1ea37da
+Author: Carl Worth <cworth@cworth.org>
+Date:   Fri Apr 11 09:50:53 2008 -0700
+
+    NEWS: Add notes for 1.6.2 release
+
+ NEWS |   35 +++++++++++++++++++++++++++++++++++
+ 1 files changed, 35 insertions(+), 0 deletions(-)
+
+commit 9cfd82e87b60c0d65e9cafda026cb9a498874575
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Thu Apr 10 14:49:47 2008 +0100
+
+    [xlib] Add locking around GC cache.
+    
+    The per-screen cached of most-recently freed GCs lacks suitable locking
+    for it to be threadsafe.
+    (cherry picked from commit dc714106e156cb7901e376c0935922446ae9bcdf)
+
+ src/cairo-xlib-private.h |    1 +
+ src/cairo-xlib-screen.c  |   31 +++++++++++++++++++++----------
+ 2 files changed, 22 insertions(+), 10 deletions(-)
+
+commit cf057c1e8603014033c079189369e91aecac2adf
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Fri Apr 11 21:42:19 2008 +0930
+
+    PS: Fix inefficient implementation of Tm/Td operators that was crashing printers
+    
+    The Td and Tm operator emulation were setting the font matrix like this:
+    
+      /some_font [xx yx xy yy x0 y0] selectfont
+    
+    where [xx yx xy yy] is the font matrix and [x0 y0] is the position of
+    the first glyph to be drawn. This seemed to be the easiest way to
+    emulate the Tm operator since the six arguments to Tm required by PDF
+    are xx,yx,xy,yy,x0,y0.
+    
+    Before the switch to pdf-operators the font matrix was set like this:
+    
+      /somefont [xx yx xy yy 0 0] selectfont x0 y0 moveto
+    
+    The selectfont operator is equivalent to calling findfont, makefont,
+    and setfont. The makefont operator creates a new font dictionary for
+    specified font that contains the specified font matrix. The
+    description of the makefont operator in the PostScript Language
+    Reference Manual states:
+    
+      "The interpreter keeps track of font dictionaries recently created
+       by makefont. Calling makefont multiple times with the same font and
+       matrix will usually return the same font rather than create a new
+       one."
+    
+    So the emulation of Tm and Td was creating a new font dictionary every
+    time a text string was displayed due to the change in the translation
+    components of the font matrix. Previously the font dictionary was
+    re-used as with the translation components of the matrix set to zero,
+    the font matrix did not change frequently.
+    
+    Some printers did not handle well the frequent creation a font
+    dictionary every time a few glyphs were displayed.
+    
+    Fix this by ensuring the translation components of the font matrix
+    used in the emulation of Tm and Td operators is always set to
+    zero. Use moveto instead for the translation components.
+    (cherry picked from commit c5814d2aa3cb68a13bc9cc8b6a47f660febcad71)
+
+ src/cairo-ps-surface.c |    9 +++++----
+ 1 files changed, 5 insertions(+), 4 deletions(-)
+
+commit eac9251d9a78e8d7bf00098b367a5176ed7dbce6
+Author: Carl Worth <cworth@cworth.org>
+Date:   Thu Apr 10 18:02:59 2008 -0700
+
+    Increment version to 1.6.1 after 1.6.0 release
+
+ configure.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
 commit d6263bec89bcd1565fb0f56a9840cd6f7761097f
 Author: Carl Worth <cworth@cworth.org>
 Date:   Thu Apr 10 17:34:41 2008 -0700
