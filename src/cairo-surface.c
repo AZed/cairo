@@ -234,6 +234,10 @@ _cairo_surface_create_similar_scratch (cairo_surface_t *other,
     if (surface == NULL)
 	surface = cairo_image_surface_create (format, width, height);
 
+    /* If any error occurred, then return the nil surface we received. */
+    if (surface->status)
+	return surface;
+
     cairo_surface_get_font_options (other, &options);
     _cairo_surface_set_font_options (surface, &options);
 
@@ -786,8 +790,10 @@ cairo_surface_get_device_offset (cairo_surface_t *surface,
 				 double          *x_offset,
 				 double          *y_offset)
 {
-    *x_offset = surface->device_transform.x0;
-    *y_offset = surface->device_transform.y0;
+    if (x_offset)
+	*x_offset = surface->device_transform.x0;
+    if (y_offset)
+	*y_offset = surface->device_transform.y0;
 }
 slim_hidden_def (cairo_surface_get_device_offset);
 
@@ -995,7 +1001,7 @@ _cairo_surface_clone_similar (cairo_surface_t  *surface,
 
     status = surface->backend->clone_similar (surface, src, src_x, src_y,
 					      width, height, clone_out);
-    if (status == CAIRO_STATUS_SUCCESS)
+    if (status == CAIRO_STATUS_SUCCESS && *clone_out != src)
         (*clone_out)->device_transform = src->device_transform;
 
     if (status != CAIRO_INT_STATUS_UNSUPPORTED)
@@ -1007,7 +1013,7 @@ _cairo_surface_clone_similar (cairo_surface_t  *surface,
 
     status = surface->backend->clone_similar (surface, &image->base, src_x,
 					      src_y, width, height, clone_out);
-    if (status == CAIRO_STATUS_SUCCESS) {
+    if (status == CAIRO_STATUS_SUCCESS && *clone_out != src) {
         (*clone_out)->device_transform = src->device_transform;
         (*clone_out)->device_transform_inverse = src->device_transform_inverse;
     }

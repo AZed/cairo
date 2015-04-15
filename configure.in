@@ -5,7 +5,7 @@ dnl An odd micro number indicates in-progress development, (eg. from git/cvs)
 dnl An even micro number indicates a released version.
 m4_define(cairo_version_major, 1)
 m4_define(cairo_version_minor, 4)
-m4_define(cairo_version_micro, 0)
+m4_define(cairo_version_micro, 2)
 
 AC_INIT([cairo],
       cairo_version_major.cairo_version_minor.cairo_version_micro,
@@ -26,7 +26,7 @@ LT_CURRENT=13
 
 # Increment any time the source changes; set to
 # 0 if you increment CURRENT
-LT_REVISION=0
+LT_REVISION=1
 
 # Increment if any interfaces have been added; set to 0
 # if any interfaces have been removed. removal has
@@ -47,8 +47,6 @@ CAIRO_VERSION_MICRO=cairo_version_micro()
 AC_SUBST(CAIRO_VERSION_MAJOR)
 AC_SUBST(CAIRO_VERSION_MINOR)
 AC_SUBST(CAIRO_VERSION_MICRO)
-
-AM_MAINTAINER_MODE
 
 AC_PROG_CC
 AC_PROG_CPP
@@ -502,11 +500,7 @@ AM_CONDITIONAL(HAVE_PTHREAD, test "x$have_pthread" = "xyes")
 
 dnl ===========================================================================
 
-CAIRO_BACKEND_ENABLE(ps, PostScript, ps, PS_SURFACE, auto, [
-    # The postscript backend requires zlib.
-    use_ps=$have_libz
-    ps_NONPKGCONFIG_LIBS=-lz
-])
+CAIRO_BACKEND_ENABLE(ps, PostScript, ps, PS_SURFACE, auto, [use_ps=yes])
 
 dnl ===========================================================================
 
@@ -583,6 +577,17 @@ dnl Checks for precise integer types
 AC_CHECK_HEADERS([stdint.h signal.h inttypes.h sys/int_types.h])
 AC_CHECK_TYPES([uint64_t, uint128_t])
 
+dnl ===========================================================================
+dnl check for CPU affinity support
+AC_CHECK_HEADERS([sched.h], [
+  AC_CHECK_FUNCS([sched_getaffinity], [
+    AC_DEFINE([HAVE_SCHED_GETAFFINITY], [1],
+	      [Define to 1 if you have Linux compatible sched_getaffinity])
+  ])
+])
+
+dnl ===========================================================================
+dnl check compiler flags
 AC_DEFUN([CAIRO_CC_TRY_FLAG], [
   AC_MSG_CHECKING([whether $CC supports $1])
 

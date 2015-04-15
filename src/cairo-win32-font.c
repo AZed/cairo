@@ -693,7 +693,7 @@ _cairo_win32_scaled_font_set_metrics (cairo_win32_scaled_font_t *scaled_font)
     if (!hdc)
 	return CAIRO_STATUS_NO_MEMORY;
 
-    if (scaled_font->preserve_axes) {
+    if (scaled_font->preserve_axes || scaled_font->base.options.hint_metrics == CAIRO_HINT_METRICS_OFF) {
 	/* For 90-degree rotations (including 0), we get the metrics
 	 * from the GDI in logical space, then convert back to font space
 	 */
@@ -723,7 +723,7 @@ _cairo_win32_scaled_font_set_metrics (cairo_win32_scaled_font_t *scaled_font)
 	_cairo_win32_scaled_font_done_unscaled_font (&scaled_font->base);
 
 	extents.ascent = (double)metrics.tmAscent / scaled_font->em_square;
-	extents.descent = metrics.tmDescent * scaled_font->em_square;
+	extents.descent = (double)metrics.tmDescent / scaled_font->em_square;
 	extents.height = (double)(metrics.tmHeight + metrics.tmExternalLeading) / scaled_font->em_square;
 	extents.max_x_advance = (double)(metrics.tmMaxCharWidth) / scaled_font->em_square;
 	extents.max_y_advance = 0;

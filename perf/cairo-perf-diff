@@ -3,37 +3,48 @@ set -e
 
 usage() {
     argv0=$(basename $0)
-    echo "Usage:" >&2
-    echo "For comparing files created my cairo-perf:" >&2
-    echo "" >&2
-    echo "	$argv0 old.perf new.perf" >&2
-    echo "" >&2
-    echo "For comparing (cached) performance of revisions:" >&2
-    echo "" >&2
-    echo "	$argv0 [-f] <revision> [-- cairo-perf options]" >&2
-    echo "	$argv0 [-f] <rev1> <rev2> [-- cairo-perf-options]" >&2
-    echo "" >&2
-    echo "If given a single revision, compares its results to that of its" >&2
-    echo "(first-parent) predecessor. Otherwise compares the two given revisions." >&2
-    echo "The revisions can be any revision accepted by git. For example:" >&2
-    echo "" >&2
-    echo "	$argv0 HEAD		# Show impact of latest commit" >&2
-    echo "	$argv0 1.2.0 1.2.4	# Compare performance of 1.2.0 to 1.2.4" >&2
-    echo "" >&2
-    echo "The -f option forces cairo-perf-diff to re-run performance tests even" >&2
-    echo "if cached performance data is available." >&2
-    echo "" >&2
-    echo "Additional options can be passed the child cairo-perf process" >&2
-    echo "by separating them with a double hyphen (--). For example, to" >&2
-    echo "examine what the impact of the latest change is on the stroke" >&2
-    echo "test you might use:" >&2
-    echo "" >&2
-    echo "	$argv0 HEAD -- stroke" >&2
-    echo "" >&2
-    echo "The performance results are cached in .perf next to the .git directory." >&2
-    echo "" >&2
-    echo "Set CAIRO_AUTOGEN_OPTIONS to pass options to autogen for both" >&2
-    echo "builds." >&2
+
+    cat >&2 << END
+Usage:
+For comparing files created my cairo-perf:
+
+	$argv0 old.perf new.perf
+
+For comparing (cached) performance of revisions:
+
+	$argv0 [OPTIONS] <revision> [-- cairo-perf options]
+	$argv0 [OPTIONS] <rev1> <rev2> [-- cairo-perf-options]
+
+If given a single revision, compares its results to that of its
+(first-parent) predecessor. Otherwise compares the two given revisions.
+The revisions can be any revision accepted by git. For example:
+
+	$argv0 HEAD		# Show impact of latest commit
+	$argv0 1.2.0 1.2.4	# Compare performance of 1.2.0 to 1.2.4
+
+Options:
+
+-f, --force
+	Forces cairo-perf-diff to re-run performance tests
+	even if cached performance data is available.
+
+-h, --html
+	With this option performance changes are summarized
+	as HTML table.
+
+Additional options can be passed the child cairo-perf process
+by separating them with a double hyphen (--). For example, to
+examine what the impact of the latest change is on the stroke
+test you might use:
+
+	$argv0 HEAD -- stroke
+
+The performance results are cached in .perf next to the .git directory.
+
+Set CAIRO_AUTOGEN_OPTIONS to pass options to autogen for both
+builds.
+END
+
     exit 1
 }
 
@@ -42,10 +53,15 @@ if [ $# -eq 0 ] || [ "$1" = "--" ]; then
     usage
 fi
 
-if [ "$1" = "-f" ]; then
-    force_cairo_perf="true"
-    shift 1
-fi
+while true; do
+    case $1 in
+        -f|--force) force_cairo_perf="true";;
+        -h|--html) html_output="true";;
+        *) break;;
+    esac
+
+    shift
+done
 
 if [ $# -eq 1 ] || [ "$2" = "--" ]; then
     old="$1^"
@@ -82,6 +98,12 @@ rev2sha() {
     git rev-parse --verify $rev || ( echo "Cannot resolve $rev as a git object" && exit 1 )
 }
 
+cpu_count() {
+    test -f /proc/cpuinfo &&
+    grep -c '^processor[[:blank:]]\+:' /proc/cpuinfo ||
+    echo 1
+}
+
 # We cache performance output based on a two-part name capturing the
 # current performance test suite and the library being tested. We
 # capture these as the tree object of the perf directory in HEAD and
@@ -96,8 +118,9 @@ rev2sha() {
 rev2perf() {
     rev=$1
     src_tree_sha=$(rev2sha $rev:src)
+    pxm_tree_sha=$(rev2sha $rev:pixman/src)
     perf_tree_sha=$(rev2sha HEAD:perf)
-    echo "$CAIRO_PERF_DIR/${perf_tree_sha}-${src_tree_sha}.perf"
+    echo "$CAIRO_PERF_DIR/${perf_tree_sha}-${src_tree_sha}-${pxm_tree_sha}.perf"
 }
 
 # Usage: run_cairo_perf_if_not_cached <rev> <suffix>
@@ -133,6 +156,11 @@ run_cairo_perf_if_not_cached() {
 
     git checkout tmp-cairo-perf-diff
     git reset --hard $sha
+
+    if [ -z "$MAKEFLAGS" ]; then
+        export MAKEFLAGS="-j$(expr $(cpu_count) + 1)"
+    fi
+
     if [ ! -e Makefile ]; then
 	CFLAGS="-O2" ./autogen.sh $CAIRO_AUTOGEN_OPTIONS
     fi
@@ -164,4 +192,9 @@ if [ ! -e $new ]; then
     new=$(rev2perf $new)
 fi
 
-$CAIRO_DIR/perf/cairo-perf-diff-files $old $new
+if [ "$html_output" != "true" ]; then
+    $CAIRO_DIR/perf/cairo-perf-diff-files $old $new
+else
+    $CAIRO_DIR/perf/cairo-perf-diff-files $old $new |
+    $CAIRO_DIR/perf/make-html.py
+fi

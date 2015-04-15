@@ -32,7 +32,6 @@ degenerate-path			\
 device-offset			\
 device-offset-positive		\
 extend-pad			\
-extend-reflect			\
 fill-and-stroke			\
 fill-and-stroke-alpha		\
 fill-and-stroke-alpha-add	\
@@ -54,6 +53,7 @@ leaky-dash			\
 leaky-polygon			\
 line-width			\
 line-width-scale		\
+line-width-zero			\
 linear-gradient			\
 linear-gradient-reflect		\
 long-lines			\
@@ -85,6 +85,7 @@ self-copy			\
 self-intersecting		\
 set-source			\
 show-text-current-point		\
+skew-extreme			\
 source-clip			\
 source-clip-scale		\
 source-surface-scale-paint	\
@@ -343,6 +344,7 @@ REFERENCE_IMAGES = \
 	set-source-svg-argb32-ref.png	\
 	show-glyphs-many-ref.png	\
 	show-text-current-point-ref.png	\
+	skew-extreme-ref.png \
 	source-clip-ref.png	\
 	source-clip-scale-quartz-ref.png	\
 	source-clip-scale-ref.png	\
@@ -409,7 +411,6 @@ extend-pad			\
 filter-nearest-offset		\
 ft-text-vertical-layout-type1	\
 long-lines			\
-radial-gradient			\
 self-intersecting		\
 surface-pattern			\
 surface-pattern-scale-down	\
@@ -462,6 +463,9 @@ $(top_builddir)/boilerplate/libcairoboilerplate.la:
 
 $(top_builddir)/src/libcairo.la:
 	cd $(top_builddir)/src && $(MAKE) $(AM_MAKEFLAGS) libcairo.la
+
+$(top_builddir)/test/pdiff/libpdiff.la:
+	cd $(top_builddir)/test/pdiff && $(MAKE) $(AM_MAKEFLAGS) libpdiff.la
 
 if HAVE_PTHREAD
 LDADD += -lpthread

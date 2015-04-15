@@ -73,7 +73,7 @@
 
 CAIRO_BEGIN_DECLS
 
-#if __GNUC__ >= 3 && defined(__ELF__)
+#if __GNUC__ >= 3 && defined(__ELF__) && !defined(__sun)
 # define slim_hidden_proto(name)	slim_hidden_proto1(name, slim_hidden_int_name(name))
 # define slim_hidden_def(name)		slim_hidden_def1(name, slim_hidden_int_name(name))
 # define slim_hidden_int_name(name) INT_##name
@@ -102,7 +102,7 @@ CAIRO_BEGIN_DECLS
 #endif
 
 /* slim_internal.h */
-#if (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3)) && defined(__ELF__)
+#if (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3)) && defined(__ELF__) && !defined(__sun)
 #define cairo_private		__attribute__((__visibility__("hidden")))
 #elif defined(__SUNPRO_C) && (__SUNPRO_C >= 0x550)
 #define cairo_private		__hidden
@@ -272,6 +272,41 @@ typedef cairo_fixed_16_16_t cairo_fixed_t;
 #define CAIRO_BITSWAP8_IF_LITTLE_ENDIAN(c) CAIRO_BITSWAP8(c)
 #endif
 
+#ifdef WORDS_BIGENDIAN
+
+#define cpu_to_be16(v) (v)
+#define be16_to_cpu(v) (v)
+#define cpu_to_be32(v) (v)
+#define be32_to_cpu(v) (v)
+
+#else
+
+static inline uint16_t
+cpu_to_be16(uint16_t v)
+{
+    return (v << 8) | (v >> 8);
+}
+
+static inline uint16_t
+be16_to_cpu(uint16_t v)
+{
+    return cpu_to_be16 (v);
+}
+
+static inline uint32_t
+cpu_to_be32(uint32_t v)
+{
+    return (cpu_to_be16 (v) << 16) | cpu_to_be16 (v >> 16);
+}
+
+static inline uint32_t
+be32_to_cpu(uint32_t v)
+{
+    return cpu_to_be32 (v);
+}
+
+#endif
+
 #include "cairo-hash-private.h"
 #include "cairo-cache-private.h"
 
@@ -386,15 +421,14 @@ typedef struct _cairo_edge {
 } cairo_edge_t;
 
 typedef struct _cairo_polygon {
+    cairo_point_t first_point;
+    cairo_point_t current_point;
+    cairo_bool_t has_current_point;
+
     int num_edges;
     int edges_size;
     cairo_edge_t *edges;
-
-    cairo_point_t first_point;
-    cairo_point_t current_point;
-    int has_current_point;
-
-    int closed;
+    cairo_edge_t  edges_embedded[8];
 } cairo_polygon_t;
 
 typedef struct _cairo_spline {
@@ -406,6 +440,7 @@ typedef struct _cairo_spline {
     int num_points;
     int points_size;
     cairo_point_t *points;
+    cairo_point_t  points_embedded[8];
 } cairo_spline_t;
 
 typedef struct _cairo_pen_vertex {
@@ -1143,8 +1178,10 @@ typedef struct _cairo_surface_pattern {
 typedef struct _cairo_gradient_pattern {
     cairo_pattern_t base;
 
+    unsigned int	    n_stops;
+    unsigned int	    stops_size;
     pixman_gradient_stop_t *stops;
-    unsigned int	   n_stops;
+    pixman_gradient_stop_t  stops_embedded[2];
 } cairo_gradient_pattern_t;
 
 typedef struct _cairo_linear_pattern {
@@ -1187,10 +1224,12 @@ typedef struct _cairo_surface_attributes {
 typedef struct _cairo_traps {
     cairo_status_t status;
 
-    cairo_trapezoid_t *traps;
+    cairo_box_t extents;
+
     int num_traps;
     int traps_size;
-    cairo_box_t extents;
+    cairo_trapezoid_t *traps;
+    cairo_trapezoid_t  traps_embedded[1];
 } cairo_traps_t;
 
 #define CAIRO_FONT_SLANT_DEFAULT   CAIRO_FONT_SLANT_NORMAL
@@ -1273,14 +1312,18 @@ cairo_private int
 _cairo_fixed_integer_ceil (cairo_fixed_t f);
 
 /* cairo_gstate.c */
-cairo_private cairo_gstate_t *
-_cairo_gstate_create (cairo_surface_t *target);
+cairo_private cairo_status_t
+_cairo_gstate_init (cairo_gstate_t  *gstate,
+		    cairo_surface_t *target);
 
 cairo_private void
-_cairo_gstate_destroy (cairo_gstate_t *gstate);
+_cairo_gstate_fini (cairo_gstate_t *gstate);
 
 cairo_private cairo_gstate_t *
 _cairo_gstate_clone (cairo_gstate_t *gstate);
+
+cairo_private void
+_cairo_gstate_destroy (cairo_gstate_t *gstate);
 
 cairo_private cairo_bool_t
 _cairo_gstate_is_redirected (cairo_gstate_t *gstate);
@@ -1548,6 +1591,9 @@ _cairo_stock_color (cairo_stock_t stock);
 #define CAIRO_COLOR_BLACK       _cairo_stock_color (CAIRO_STOCK_BLACK)
 #define CAIRO_COLOR_TRANSPARENT _cairo_stock_color (CAIRO_STOCK_TRANSPARENT)
 
+cairo_private uint16_t
+_cairo_color_double_to_short (double d);
+
 cairo_private void
 _cairo_color_init (cairo_color_t *color);
 
@@ -1585,6 +1631,9 @@ _cairo_scaled_font_freeze_cache (cairo_scaled_font_t *scaled_font);
 
 cairo_private void
 _cairo_scaled_font_thaw_cache (cairo_scaled_font_t *scaled_font);
+
+cairo_private void
+_cairo_scaled_font_reset_cache (cairo_scaled_font_t *scaled_font);
 
 cairo_private void
 _cairo_scaled_font_set_error (cairo_scaled_font_t *scaled_font,

@@ -2,6 +2,7 @@ font_subset_sources =				\
 	cairo-cff-subset.c			\
 	cairo-truetype-subset.c			\
 	cairo-type1-fallback.c			\
+	cairo-type1-private.h			\
 	cairo-truetype-subset-private.h		\
 	cairo-scaled-font-subsets.c		\
 	cairo-scaled-font-subsets-private.h
@@ -20,7 +21,7 @@ endif
 
 if CAIRO_HAS_PDF_SURFACE
 libcairo_pdf_headers = cairo-pdf.h
-libcairo_pdf_sources = cairo-pdf-surface.c cairo-pdf-test.h
+libcairo_pdf_sources = cairo-pdf-surface.c cairo-deflate-stream.c cairo-pdf-test.h
 libcairo_font_subset_sources =	$(font_subset_sources)
 backend_pkgconfigs += cairo-pdf.pc
 endif
@@ -131,8 +132,6 @@ endif
 FONTCONFIG_LIBS=@FONTCONFIG_LIBS@
 XRENDER_LIBS=@XRENDER_LIBS@
 
-BUILT_SOURCES = cairo-features.h
-
 cairo_headers =				\
 	cairo.h				\
 	$(libcairo_atsui_headers)	\
@@ -142,7 +141,6 @@ cairo_headers =				\
 	$(libcairo_svg_headers)		\
 	$(libcairo_ps_headers)		\
 	$(libcairo_quartz_headers)	\
-	$(libcairo_nquartz_headers)	\
 	$(libcairo_win32_headers)	\
 	$(libcairo_os2_headers)		\
 	$(libcairo_beos_headers)	\
@@ -153,9 +151,11 @@ cairo_headers =				\
 
 cairoincludedir = $(includedir)/cairo
 cairoinclude_HEADERS =			\
-	cairo-features.h		\
 	cairo-deprecated.h		\
 	$(cairo_headers)
+
+nodist_cairoinclude_HEADERS =		\
+	cairo-features.h
 
 lib_LTLIBRARIES = libcairo.la
 
@@ -174,7 +174,6 @@ libcairo_la_SOURCES =				\
 	cairo-clip-private.h			\
 	cairo-color.c				\
 	cairo-debug.c				\
-	cairo-deflate-stream.c			\
 	cairo-fixed.c				\
 	cairo-font.c				\
 	cairo-font-options.c			\
@@ -234,7 +233,6 @@ libcairo_la_SOURCES =				\
 	$(libcairo_xlib_sources)		\
 	$(libcairo_xcb_sources)			\
 	$(libcairo_quartz_sources)		\
-	$(libcairo_nquartz_sources)		\
 	$(libcairo_glitz_sources)		\
 	$(libcairo_win32_sources)		\
 	$(libcairo_os2_sources)			\
