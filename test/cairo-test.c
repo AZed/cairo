@@ -1,5 +1,5 @@
 /*
- * Copyright © 2004,2006 Red Hat, Inc.
+ * Copyright © 2004 Red Hat, Inc.
  *
  * Permission to use, copy, modify, distribute, and sell this software
  * and its documentation for any purpose is hereby granted without
@@ -85,29 +85,6 @@ const char *srcdir;
  * continue testing, although one crasher may already have corrupted memory in
  * an nonrecoverable fashion. */
 jmp_buf jmpbuf;
-
-typedef cairo_surface_t *
-(*cairo_test_create_target_surface_t) (cairo_test_t	 *test,
-				       cairo_content_t	  content,
-				       void		**closure);
-
-typedef cairo_status_t
-(*cairo_test_write_to_png_t) (cairo_surface_t *surface, const char *filename);
-
-typedef void
-(*cairo_test_cleanup_target_t) (void *closure);
-
-typedef struct _cairo_test_target
-{
-    const char		       	       *name;
-    cairo_surface_type_t		expected_type;
-    cairo_content_t			content;
-    int					error_tolerance;
-    cairo_test_create_target_surface_t	create_target_surface;
-    cairo_test_write_to_png_t		write_to_png;
-    cairo_test_cleanup_target_t		cleanup_target;
-    void			       *closure;
-} cairo_test_target_t;
 
 void
 cairo_test_init (const char *test_name)
@@ -362,14 +339,6 @@ cairo_test_for_target (cairo_test_t			 *test,
 	if (result.pixels_changed && result.max_diff > target->error_tolerance) {
 	    ret = CAIRO_TEST_FAILURE;
 	    goto UNWIND_CAIRO;
-	}
-	if (result.pixels_changed) {
-	    cairo_test_log ("%d pixels differ (with maximum difference of %d) from reference image %s\n",
-			    result.pixels_changed, result.max_diff, ref_name);
-	    if (result.max_diff > target->error_tolerance) {
-		ret = CAIRO_TEST_FAILURE;
-		goto UNWIND_CAIRO;
-	    }
 	}
     }
 

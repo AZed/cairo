@@ -693,7 +693,6 @@ cairo_scaled_font_set_user_data (cairo_scaled_font_t	     *scaled_font,
     return _cairo_user_data_array_set_data (&scaled_font->user_data,
 					    key, user_data, destroy);
 }
-slim_hidden_def (cairo_scaled_font_destroy);
 
 /* Public font API follows. */
 

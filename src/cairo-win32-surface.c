@@ -1882,7 +1882,7 @@ static const cairo_surface_backend_t cairo_win32_surface_backend = {
     NULL, /* mask */
     NULL, /* stroke */
     NULL, /* fill */
-    NULL, /* show_glyphs */
+    _cairo_win32_surface_show_glyphs,
 
     NULL  /* snapshot */
 };
