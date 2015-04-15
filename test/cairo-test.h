@@ -32,7 +32,37 @@
 
 #include <math.h>
 #include <cairo.h>
-#include <cairo-debug.h>
+
+CAIRO_BEGIN_DECLS
+
+#if   HAVE_STDINT_H
+# include <stdint.h>
+#elif HAVE_INTTYPES_H
+# include <inttypes.h>
+#elif HAVE_SYS_INT_TYPES_H
+# include <sys/int_types.h>
+#elif defined(_MSC_VER)
+typedef __int8 int8_t;
+typedef unsigned __int8 uint8_t;
+typedef __int16 int16_t;
+typedef unsigned __int16 uint16_t;
+typedef __int32 int32_t;
+typedef unsigned __int32 uint32_t;
+typedef __int64 int64_t;
+typedef unsigned __int64 uint64_t;
+# ifndef HAVE_UINT64_T
+#  define HAVE_UINT64_T 1
+# endif
+#else
+#error Cannot find definitions for fixed-width integral types (uint8_t, uint32_t, \etc.)
+#endif
+
+#if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4)
+#define CAIRO_PRINTF_FORMAT(fmt_index, va_index) \
+	__attribute__((__format__(__printf__, fmt_index, va_index)))
+#else
+#define CAIRO_PRINTF_FORMAT(fmt_index, va_index)
+#endif
 
 #if   HAVE_STDINT_H
 # include <stdint.h>
@@ -59,7 +89,8 @@ typedef unsigned __int64 uint64_t;
 typedef enum cairo_test_status {
     CAIRO_TEST_SUCCESS = 0,
     CAIRO_TEST_FAILURE,
-    CAIRO_TEST_UNTESTED
+    CAIRO_TEST_UNTESTED,
+    CAIRO_TEST_CRASHED
 } cairo_test_status_t;
 
 typedef struct cairo_test {
@@ -75,7 +106,7 @@ typedef cairo_test_status_t  (*cairo_test_draw_function_t) (cairo_t *cr, int wid
  *
  * cairo_test() accepts a draw function which will be called once for
  * each testable backend. The following checks will be performed for
- * each backend: 
+ * each backend:
  *
  * 1) If draw() does not return CAIRO_TEST_SUCCESS then this backend
  *    fails.
@@ -100,7 +131,7 @@ cairo_test (cairo_test_t *test, cairo_test_draw_function_t draw);
  * reason. Any test calling this variant should be listed in the
  * XFAIL_TESTS list in Makefile.am. */
 cairo_test_status_t
-cairo_test_expect_failure (cairo_test_t		      *test, 
+cairo_test_expect_failure (cairo_test_t		      *test,
 			   cairo_test_draw_function_t  draw,
 			   const char		      *reason);
 
@@ -117,7 +148,7 @@ cairo_test_init (const char *test_name);
 
 /* Print a message to the log file, ala printf. */
 void
-cairo_test_log (const char *fmt, ...);
+cairo_test_log (const char *fmt, ...) CAIRO_PRINTF_FORMAT(1, 2);
 
 /* Helper functions that take care of finding source images even when
  * building in a non-srcdir manner, (ie. the tests will be run in a
@@ -129,7 +160,12 @@ cairo_test_create_surface_from_png (const char *filename);
 cairo_pattern_t *
 cairo_test_create_pattern_from_png (const char *filename);
 
+cairo_status_t
+cairo_test_paint_checkered (cairo_t *cr);
+
 void
 xasprintf (char **strp, const char *fmt, ...);
+
+CAIRO_END_DECLS
 
 #endif

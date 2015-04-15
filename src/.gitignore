@@ -1,0 +1,15 @@
+.deps
+.libs
+Makefile
+Makefile.in
+*.gcda
+*.gcno
+*.la
+*.lo
+*.loT
+*.pc
+cairo-features.h
+cairo.def
+*.o
+*~
+TAGS
