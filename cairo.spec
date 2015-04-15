@@ -1,16 +1,23 @@
-%define pixman_version 0.12.0
+%define pixman_version 0.18.4
 %define freetype_version 2.1.9
-%define fontconfig_version 2.0
+%define fontconfig_version 2.2.95
 
 Summary:	A 2D graphics library
 Name:		cairo
-Version:	1.8.8
-Release:	3.1%{?dist}
+Version:	1.12.14
+Release:	6%{?dist}
 URL:		http://cairographics.org
-Source0:	http://cairographics.org/releases/%{name}-%{version}.tar.gz
+#VCS:		git:git://git.freedesktop.org/git/cairo
+#Source0:	http://cairographics.org/snapshots/%{name}-%{version}.tar.gz
+Source0:	http://cairographics.org/releases/%{name}-%{version}.tar.xz
 License:	LGPLv2 or MPLv1.1
 Group:		System Environment/Libraries
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+
+Patch0:		0001-xlib-Don-t-crash-when-swapping-a-0-sized-glyph.patch
+Patch1:		0002-xcb-Don-t-crash-when-swapping-a-0-sized-glyph.patch
+Patch2:		0003-mempool-Reduce-an-assert-into-an-error-return-for-ge.patch
+Patch3:         0004-font-Generate-PDFs-with-correct-font-names.patch
+Patch4:         cairo-multilib.patch
 
 BuildRequires: pkgconfig
 BuildRequires: libXrender-devel
@@ -20,8 +27,10 @@ BuildRequires: libxml2-devel
 BuildRequires: pixman-devel >= %{pixman_version}
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: fontconfig-devel >= %{fontconfig_version}
-
-Patch0: cairo-1.8.6-repeat-modes.patch
+BuildRequires: glib2-devel
+BuildRequires: librsvg2-devel
+BuildRequires: mesa-libGL-devel
+BuildRequires: mesa-libEGL-devel
 
 %description
 Cairo is a 2D graphics library designed to provide high-quality display
@@ -42,7 +51,6 @@ Requires: libpng-devel
 Requires: pixman-devel >= %{pixman_version}
 Requires: freetype-devel >= %{freetype_version}
 Requires: fontconfig-devel >= %{fontconfig_version}
-Requires: pkgconfig
 
 %description devel
 Cairo is a 2D graphics library designed to provide high-quality display
@@ -51,49 +59,254 @@ and print output.
 This package contains libraries, header files and developer documentation
 needed for developing software which uses the cairo graphics library.
 
+%package gobject
+Summary: GObject bindings for cairo
+Group: System Environment/Libraries
+Requires: %{name} = %{version}-%{release}
+
+%description gobject
+Cairo is a 2D graphics library designed to provide high-quality display
+and print output.
+
+This package contains functionality to make cairo graphics library
+integrate well with the GObject object system used by GNOME.
+
+%package gobject-devel
+Summary: Development files for cairo-gobject
+Group: Development/Libraries
+Requires: %{name}-devel = %{version}-%{release}
+Requires: %{name}-gobject = %{version}-%{release}
+
+%description gobject-devel
+Cairo is a 2D graphics library designed to provide high-quality display
+and print output.
+
+This package contains libraries, header files and developer documentation
+needed for developing software which uses the cairo Gobject library.
+
+%package tools
+Summary: Development tools for cairo
+Group: Development/Tools
+
+%description tools
+Cairo is a 2D graphics library designed to provide high-quality display
+and print output.
+
+This package contains tools for working with the cairo graphics library.
+ * cairo-trace: Record cairo library calls for later playback
+
 %prep
 %setup -q
-%patch0 -p1 -b .repeat-modes
+%patch0 -p1 -b .xlib-swap
+%patch1 -p1 -b .xcb-swap
+%patch2 -p1 -b .get_buddy-assert
+%patch3 -p1 -b .font-name
+%patch4 -p1 -b .multilib
 
 %build
-%configure --disable-static 	\
-	--enable-warnings 	\
-	--enable-xlib 		\
-	--enable-freetype 	\
-	--enable-ps 		\
-	--enable-pdf 		\
-	--enable-svg 		\
+%configure --disable-static	\
+	--enable-xlib		\
+	--enable-ft		\
+	--enable-ps		\
+	--enable-pdf		\
+	--enable-svg		\
+	--enable-tee		\
+	--enable-gl		\
+	--enable-gobject	\
 	--disable-gtk-doc
-make
+sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
+sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
+make V=1 %{?_smp_mflags}
 
 %install
-rm -rf $RPM_BUILD_ROOT
-
-make install DESTDIR=$RPM_BUILD_ROOT
+make install V=1 DESTDIR=$RPM_BUILD_ROOT
 rm $RPM_BUILD_ROOT%{_libdir}/*.la
-
-%clean
-rm -rf $RPM_BUILD_ROOT
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
+%post gobject -p /sbin/ldconfig
+%postun gobject -p /sbin/ldconfig
+
 %files
-%defattr(-,root,root,-)
 %doc AUTHORS BIBLIOGRAPHY BUGS COPYING COPYING-LGPL-2.1 COPYING-MPL-1.1 NEWS README
-%{_libdir}/libcairo*.so.*
+%{_libdir}/libcairo.so.*
+%{_libdir}/libcairo-script-interpreter.so.*
+%{_bindir}/cairo-sphinx
 
 %files devel
-%defattr(-,root,root,-)
 %doc ChangeLog PORTING_GUIDE
-%{_includedir}/*
-%{_libdir}/libcairo*.so
-%{_libdir}/pkgconfig/*
+%dir %{_includedir}/cairo/
+%{_includedir}/cairo/cairo-deprecated.h
+%{_includedir}/cairo/cairo-features.h
+%{_includedir}/cairo/cairo-ft.h
+%{_includedir}/cairo/cairo.h
+%{_includedir}/cairo/cairo-pdf.h
+%{_includedir}/cairo/cairo-ps.h
+%{_includedir}/cairo/cairo-script-interpreter.h
+%{_includedir}/cairo/cairo-svg.h
+%{_includedir}/cairo/cairo-tee.h
+%{_includedir}/cairo/cairo-version.h
+%{_includedir}/cairo/cairo-xlib-xrender.h
+%{_includedir}/cairo/cairo-xlib.h
+%{_includedir}/cairo/cairo-gl.h
+%{_includedir}/cairo/cairo-script.h
+%{_includedir}/cairo/cairo-xcb.h
+%{_libdir}/libcairo.so
+%{_libdir}/libcairo-script-interpreter.so
+%{_libdir}/pkgconfig/cairo-fc.pc
+%{_libdir}/pkgconfig/cairo-ft.pc
+%{_libdir}/pkgconfig/cairo.pc
+%{_libdir}/pkgconfig/cairo-pdf.pc
+%{_libdir}/pkgconfig/cairo-png.pc
+%{_libdir}/pkgconfig/cairo-ps.pc
+%{_libdir}/pkgconfig/cairo-svg.pc
+%{_libdir}/pkgconfig/cairo-tee.pc
+%{_libdir}/pkgconfig/cairo-xlib.pc
+%{_libdir}/pkgconfig/cairo-xlib-xrender.pc
+%{_libdir}/pkgconfig/cairo-egl.pc
+%{_libdir}/pkgconfig/cairo-gl.pc
+%{_libdir}/pkgconfig/cairo-glx.pc
+%{_libdir}/pkgconfig/cairo-script.pc
+%{_libdir}/pkgconfig/cairo-xcb-shm.pc
+%{_libdir}/pkgconfig/cairo-xcb.pc
 %{_datadir}/gtk-doc/html/cairo
 
+%files gobject
+%{_libdir}/libcairo-gobject.so.*
+
+%files gobject-devel
+%{_includedir}/cairo/cairo-gobject.h
+%{_libdir}/libcairo-gobject.so
+%{_libdir}/pkgconfig/cairo-gobject.pc
+
+%files tools
+%{_bindir}/cairo-trace
+%{_libdir}/cairo/
+
 %changelog
-* Mon Nov 30 2009 Dennis Gregorovic <dgregor@redhat.com> - 1.8.8-3.1
-- Rebuilt for RHEL 6
+* Thu Feb  6 2014 Benjamin Otte <otte@redhat.com> - 1.12.14-6
+- Add patch to properly escape font names in PDFs
+
+* Fri Jan 24 2014 Daniel Mach <dmach@redhat.com> - 1.12.14-5
+- Mass rebuild 2014-01-24
+
+* Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 1.12.14-4
+- Mass rebuild 2013-12-27
+
+* Thu Jul 17 2013 Matthias Clasen <mclasen@redhat.com> 1.12.14-3
+- Fix a multilib issue in /usr/bin/cairo-trace
+
+* Sat May 25 2013 Kalev Lember <kalevlember@gmail.com> 1.12.14-2
+- Backport an upstream patch for eog get_buddy() crashes (#912030)
+
+* Tue Feb 12 2013 Adam Jackson <ajax@redhat.com> 1.12.14-1
+- cairo 1.12.14
+
+* Mon Jan 28 2013 Adam Jackson <ajax@redhat.com> 1.12.10-2
+- cairo-1.12.10-xlib-regression-fix.patch: Fix a regression caused by
+  mit-shm surfaces.
+
+* Wed Jan 16 2013 Adam Jackson <ajax@redhat.com> 1.12.10-1
+- cairo 1.12.10
+- 0001-xlib-shm-Fix-memory-leak.patch: Drop, merged.
+
+* Wed Jan  2 2013 Matthias Clasen <mclasen@redhat.com> - 1.12.8-3
+- Make inter-subpackage deps explicit
+
+* Tue Dec 18 2012 Adam Jackson <ajax@redhat.com> 1.12.8-2
+- 0001-xlib-shm-Fix-memory-leak.patch: Fix a memory leak with shm image
+  surfaces. (#882976)
+
+* Mon Nov  5 2012 Matthias Clasen <mclasen@redhat.com> - 1.12.8-1
+- Update to 1.12.8, including a fix for screenshots in fallback mode
+
+* Wed Oct 31 2012 Adam Jackson <ajax@redhat.com> 1.12.6-2
+- *-x{c,li}b-Don-t-crash-when-swapping-a-0-sized-glyph.patch: Fix some
+  crashes when client and server endian don't match.
+
+* Thu Oct 25 2012 Kalev Lember <kalevlember@gmail.com> - 1.12.6-1
+- Update to 1.12.6
+
+* Fri Oct 12 2012 Matthias Clasen <mclasen@redhat.com> - 1.12.4-1
+- 1.12.4
+- drop obsolete patch
+
+* Wed Sep 19 2012 Thorsten Leemhuis <fedora@leemhuis.info> - 1.12.2-4.1
+- rebuild for f18
+
+* Tue Sep 18 2012 Thorsten Leemhuis <fedora@leemhuis.info> - 1.12.2-4
+- add patch from master to fix issues with weston
+
+* Wed Jul 18 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.12.2-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
+
+* Sat Jul 14 2012 Ville Skyttä <ville.skytta@iki.fi> - 1.12.2-2
+- Add ldconfig scriptlet calls to -gobject.
+- Fix rpmlint's spaces vs tabs warnings.
+
+* Fri May 18 2012 Matthias Clasen <mclasen@redhat.com> - 1.12.2-1
+- Update to 1.12.2
+
+* Tue Apr 24 2012 Richard Hughes <rhughes@redhat.com> - 1.12.0-1
+- Update to latest stable release
+- Enable the GL backend
+
+* Thu Mar 15 2012 Benjamin Otte <otte@redhat.com> - 1.10.2-7
+- Add patch to make eclipse not crash (#803878)
+
+* Thu Jan 12 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.10.2-6
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
+* Mon Dec 05 2011 Adam Jackson <ajax@redhat.com> 1.10.2-5
+- Rebuild for new libpng
+
+* Fri Jul 01 2011 Rex Dieter <rdieter@fedoraproject.org> 1.10.2-4
+- cairo-devel doesn't own /usr/include/cairo (#716611)
+
+* Tue Feb 08 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.10.2-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
+
+* Mon Jan 24 2011 Christopher Aillon <caillon@redhat.com> - 1.10.2-2
+- Enable tee support
+
+* Mon Jan 03 2011 Benjamin Otte <otte@redhat.com> - 1.10.2-1
+- Update to 1.10.2
+
+* Thu Nov 11 2010 Tom "spot" Callaway <tcallawa@redhat.com> - 1.10.0-4
+- add missing BuildRequires: librsvg2 for SVG support
+
+* Wed Sep 29 2010 jkeating - 1.10.0-3
+- Rebuilt for gcc bug 634757
+
+* Thu Sep 16 2010 Matthias Clasen <mclasen@redhat.com> - 1.10.0-2
+- Drop the explicit dep on the wrong package from -gobject-devel
+
+* Tue Sep 07 2010 Benjamin Otte <otte@redhat.com> - 1.10.0-1
+- Update to 1.10.0
+- Add cairo-gobject package
+
+* Mon Jul 26 2010 Benjamin Otte <otte@redhat.com> - 1.9.14-1
+- Update to 1.9.14 snapshot
+
+* Sun Jul 04 2010 Benjamin Otte <otte@redhat.com> - 1.9.12-1
+- Update to 1.9.12 snapshot
+- Remove now unnecessary patch
+
+* Sun Jul 04 2010 Benjamin Otte <otte@redhat.com> - 1.9.10-3
+- Add patch to force linking with gcc, not g++. (#606523)
+
+* Sun Jul 04 2010 Benjamin Otte <otte@redhat.com> - 1.9.10-2
+- Don't use silent rules, we want verbose output in builders
+
+* Thu Jun 27 2010 Benjamin Otte <otte@redhat.com> - 1.9.10-1
+- Update to 1.9.10 snapshot
+
+* Thu Jun 17 2010 Benjamin Otte <otte@redhat.com> - 1.9.8-1
+- Update to 1.9.8 snapshot
+
+* Sun Feb 21 2010 Matthias Clasen <mclasen@redhat.com> - 1.8.10-1
+- Update to 1.8.10
 
 * Sun Aug  2 2009 Matthias Clasen <mclasen@redhat.com> - 1.8.8-3
 - Move ChangeLog to -devel to save space
