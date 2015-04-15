@@ -160,6 +160,87 @@ static void quartz_ensure_symbols(void)
     _cairo_quartz_symbol_lookup_done = TRUE;
 }
 
+CGImageRef
+_cairo_quartz_create_cgimage (cairo_format_t format,
+			      unsigned int width,
+			      unsigned int height,
+			      unsigned int stride,
+			      void *data,
+			      cairo_bool_t interpolate,
+			      CGColorSpaceRef colorSpaceOverride,
+			      CGDataProviderReleaseDataCallback releaseCallback,
+			      void *releaseInfo)
+{
+    CGImageRef image = NULL;
+    CGDataProviderRef dataProvider = NULL;
+    CGColorSpaceRef colorSpace = colorSpaceOverride;
+    CGBitmapInfo bitinfo;
+    int bitsPerComponent, bitsPerPixel;
+
+    switch (format) {
+	case CAIRO_FORMAT_ARGB32:
+	    if (colorSpace == NULL)
+		colorSpace = CGColorSpaceCreateDeviceRGB();
+	    bitinfo = kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Host;
+	    bitsPerComponent = 8;
+	    bitsPerPixel = 32;
+	    break;
+
+	case CAIRO_FORMAT_RGB24:
+	    if (colorSpace == NULL)
+		colorSpace = CGColorSpaceCreateDeviceRGB();
+	    bitinfo = kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Host;
+	    bitsPerComponent = 8;
+	    bitsPerPixel = 32;
+	    break;
+
+	/* XXX -- should use CGImageMaskCreate! */
+	case CAIRO_FORMAT_A8:
+	    if (colorSpace == NULL)
+		colorSpace = CGColorSpaceCreateDeviceGray();
+	    bitinfo = kCGImageAlphaNone;
+	    bitsPerComponent = 8;
+	    bitsPerPixel = 8;
+	    break;
+
+	case CAIRO_FORMAT_A1:
+	default:
+	    return NULL;
+    }
+
+    dataProvider = CGDataProviderCreateWithData (releaseInfo,
+						 data,
+						 height * stride,
+						 releaseCallback);
+
+    if (!dataProvider) {
+	// manually release
+	if (releaseCallback)
+	    releaseCallback (releaseInfo, data, height * stride);
+	goto FINISH;
+    }
+
+    image = CGImageCreate (width, height,
+			   bitsPerComponent,
+			   bitsPerPixel,
+			   stride,
+			   colorSpace,
+			   bitinfo,
+			   dataProvider,
+			   NULL,
+			   interpolate,
+			   kCGRenderingIntentDefault);
+
+FINISH:
+
+    CGDataProviderRelease (dataProvider);
+
+    if (colorSpace != colorSpaceOverride)
+	CGColorSpaceRelease (colorSpace);
+
+    return image;
+}
+
 static inline cairo_bool_t
 _cairo_quartz_is_cgcontext_bitmap_context (CGContextRef cgc) {
     if (cgc == NULL)
@@ -601,13 +682,19 @@ ComputeGradientValue (void *info, const float *in, float *out)
 static CGFunctionRef
 CreateGradientFunction (cairo_gradient_pattern_t *gpat)
 {
+    cairo_pattern_t *pat;
     float input_value_range[2] = { 0.f, 1.f };
     float output_value_ranges[8] = { 0.f, 1.f, 0.f, 1.f, 0.f, 1.f, 0.f, 1.f };
     CGFunctionCallbacks callbacks = {
 	0, ComputeGradientValue, (CGFunctionReleaseInfoCallback) cairo_pattern_destroy
     };
 
-    return CGFunctionCreate (gpat,
+    if (_cairo_pattern_create_copy (&pat, &gpat->base))
+	/* quartz doesn't deal very well with malloc failing, so there's
+	 * not much point in us trying either */
+	return NULL;
+
+    return CGFunctionCreate (pat,
 			     1,
 			     input_value_range,
 			     4,
@@ -621,6 +708,7 @@ CreateRepeatingGradientFunction (cairo_quartz_surface_t *surface,
 				 CGPoint *start, CGPoint *end,
 				 CGAffineTransform matrix)
 {
+    cairo_pattern_t *pat;
     float input_value_range[2];
     float output_value_ranges[8] = { 0.f, 1.f, 0.f, 1.f, 0.f, 1.f, 0.f, 1.f };
     CGFunctionCallbacks callbacks = {
@@ -685,7 +773,12 @@ CreateRepeatingGradientFunction (cairo_quartz_surface_t *surface,
     input_value_range[0] = 0.0 - 1.0 * rep_start;
     input_value_range[1] = 1.0 + 1.0 * rep_end;
 
-    return CGFunctionCreate (gpat,
+    if (_cairo_pattern_create_copy (&pat, &gpat->base))
+	/* quartz doesn't deal very well with malloc failing, so there's
+	 * not much point in us trying either */
+	return NULL;
+
+    return CGFunctionCreate (pat,
 			     1,
 			     input_value_range,
 			     4,
@@ -694,6 +787,13 @@ CreateRepeatingGradientFunction (cairo_quartz_surface_t *surface,
 }
 
 /* Obtain a CGImageRef from a #cairo_surface_t * */
+
+static void
+DataProviderReleaseCallback (void *info, const void *data, size_t size)
+{
+    cairo_surface_t *surface = (cairo_surface_t *) info;
+    cairo_surface_destroy (surface);
+}
 
 static cairo_status_t
 _cairo_surface_to_cgimage (cairo_surface_t *target,
@@ -737,17 +837,25 @@ _cairo_surface_to_cgimage (cairo_surface_t *target,
     if (isurf->width == 0 || isurf->height == 0) {
 	*image_out = NULL;
     } else {
-	image = _cairo_quartz_create_cgimage (isurf->format,
-					      isurf->width,
-					      isurf->height,
-					      isurf->stride,
-					      isurf->data,
-					      TRUE,
-					      NULL, NULL, NULL);
+	cairo_image_surface_t *isurf_snap = NULL;
+	isurf_snap = (cairo_image_surface_t*) _cairo_surface_snapshot ((cairo_surface_t*) isurf);
+	if (isurf_snap == NULL)
+	    return CAIRO_STATUS_NO_MEMORY;
 
-	/* Create a copy to ensure that the CGImageRef doesn't depend on the image surface's backing store */
-	*image_out = CGImageCreateCopy (image);
-	CGImageRelease (image);
+	if (isurf_snap->base.type != CAIRO_SURFACE_TYPE_IMAGE)
+	    return CAIRO_STATUS_SURFACE_TYPE_MISMATCH;
+
+	image = _cairo_quartz_create_cgimage (isurf_snap->format,
+					      isurf_snap->width,
+					      isurf_snap->height,
+					      isurf_snap->stride,
+					      isurf_snap->data,
+					      TRUE,
+					      NULL,
+					      DataProviderReleaseCallback,
+					      isurf_snap);
+
+	*image_out = image;
     }
 
     if ((cairo_surface_t*) isurf != source)
@@ -794,7 +902,6 @@ SurfacePatternDrawFunc (void *ainfo, CGContextRef context)
 	/* Then unflip the Y-axis again, and draw the image above the point. */
 	CGContextScaleCTM (context, 1, -1);
 	CGContextDrawImage (context, info->imageBounds, info->image);
-
     }
 }
 
@@ -860,8 +967,8 @@ _cairo_quartz_cairo_repeating_surface_pattern_to_quartz (cairo_quartz_surface_t 
      * image surface that it's backed by.
      */
     info->image = image;
-
     info->imageBounds = CGRectMake (0, 0, extents.width, extents.height);
+    info->do_reflect = FALSE;
 
     pbounds.origin.x = 0;
     pbounds.origin.y = 0;
@@ -1470,8 +1577,8 @@ _cairo_quartz_surface_create_similar (void *abstract_surface,
 
     // verify width and height of surface
     if (!_cairo_quartz_verify_surface_size(width, height)) {
-	_cairo_error (CAIRO_STATUS_NO_MEMORY);
-	return NULL;
+	return _cairo_surface_create_in_error (_cairo_error
+					       (CAIRO_STATUS_NO_MEMORY));
     }
 
     return cairo_quartz_surface_create (format, width, height);
@@ -1484,6 +1591,8 @@ _cairo_quartz_surface_clone_similar (void *abstract_surface,
 				     int              src_y,
 				     int              width,
 				     int              height,
+				     int             *clone_offset_x,
+				     int             *clone_offset_y,
 				     cairo_surface_t **clone_out)
 {
     cairo_quartz_surface_t *new_surface = NULL;
@@ -1502,6 +1611,8 @@ _cairo_quartz_surface_clone_similar (void *abstract_surface,
 	*clone_out = (cairo_surface_t*)
 	    _cairo_quartz_surface_create_internal (NULL, CAIRO_CONTENT_COLOR_ALPHA,
 						   width, height);
+	*clone_offset_x = 0;
+	*clone_offset_y = 0;
 	return CAIRO_STATUS_SUCCESS;
     }
 
@@ -1512,6 +1623,8 @@ _cairo_quartz_surface_clone_similar (void *abstract_surface,
 	    *clone_out = (cairo_surface_t*)
 		_cairo_quartz_surface_create_internal (NULL, CAIRO_CONTENT_COLOR_ALPHA,
 						       qsurf->extents.width, qsurf->extents.height);
+	    *clone_offset_x = 0;
+	    *clone_offset_y = 0;
 	    return CAIRO_STATUS_SUCCESS;
 	}
     }
@@ -1550,7 +1663,9 @@ _cairo_quartz_surface_clone_similar (void *abstract_surface,
 
     CGImageRelease (quartz_image);
 
-FINISH:    
+FINISH:
+    *clone_offset_x = src_x;
+    *clone_offset_y = src_y;
     *clone_out = (cairo_surface_t*) new_surface;
 
     return CAIRO_STATUS_SUCCESS;
@@ -1875,7 +1990,8 @@ _cairo_quartz_surface_show_glyphs (void *abstract_surface,
 				   cairo_pattern_t *source,
 				   cairo_glyph_t *glyphs,
 				   int num_glyphs,
-				   cairo_scaled_font_t *scaled_font)
+				   cairo_scaled_font_t *scaled_font,
+				   int *remaining_glyphs)
 {
     CGAffineTransform textTransform, ctm;
 #define STATIC_BUF_SIZE 64
@@ -2154,7 +2270,7 @@ _cairo_quartz_surface_mask_with_generic (cairo_quartz_surface_t *surface,
     cairo_surface_t *gradient_surf = NULL;
     cairo_t *gradient_surf_cr = NULL;
 
-    cairo_pattern_union_t surface_pattern;
+    cairo_surface_pattern_t surface_pattern;
     cairo_int_status_t status;
 
     /* Render the gradient to a surface */
@@ -2171,9 +2287,9 @@ _cairo_quartz_surface_mask_with_generic (cairo_quartz_surface_t *surface,
     if (status)
 	goto BAIL;
 
-    _cairo_pattern_init_for_surface (&surface_pattern.surface, gradient_surf);
+    _cairo_pattern_init_for_surface (&surface_pattern, gradient_surf);
 
-    status = _cairo_quartz_surface_mask_with_surface (surface, op, source, &surface_pattern.surface);
+    status = _cairo_quartz_surface_mask_with_surface (surface, op, source, &surface_pattern);
 
     _cairo_pattern_fini (&surface_pattern.base);
 
