@@ -1,3 +1,70 @@
+commit 08a804806355d99d7968976d6afb98bbc0f2613d
+Author: Carl Worth <cworth@cworth.org>
+Date:   Fri Apr 11 14:33:12 2008 -0700
+
+    Increment version to 1.6.4
+
+ configure.in |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit a96176e12fa99b293453fa0321b1dfa4fd242917
+Author: Carl Worth <cworth@cworth.org>
+Date:   Fri Apr 11 14:32:37 2008 -0700
+
+    NEWS: Add notes for cairo 1.6.4
+
+ NEWS |   29 +++++++++++++++++++++++++++++
+ 1 files changed, 29 insertions(+), 0 deletions(-)
+
+commit 32e576382bc08ffaf98ebfc11c96e1453c437bbe
+Author: Carl Worth <cworth@cworth.org>
+Date:   Fri Apr 11 14:13:03 2008 -0700
+
+    Prevent cairo from being linked unnecessarilly with g++
+    
+    The beos backend involves a source file written in C++.
+    Apparently, automake sees the conditional inclusion of
+    that source file and insists on doing the final link of
+    cairo with g++ even though that file isn't being compiled
+    at all.
+    
+    We definitely don't want that as it makes libcairo link
+    and depend on libstdc++ unnecessarily, (which can break
+    distribution packaging when not expecting it, etc.).
+
+ src/Makefile.am |    1 -
+ 1 files changed, 0 insertions(+), 1 deletions(-)
+
+commit 8f1c8d4b26d6da11101c51ef388d1dcc7177cfb4
+Author: Carl Worth <cworth@cworth.org>
+Date:   Fri Apr 11 13:48:38 2008 -0700
+
+    Revert "[xlib] Add locking around GC cache."
+    
+    This reverts commit 9cfd82e87b60c0d65e9cafda026cb9a498874575.
+    
+    The fix was broken as it introduced crashes by calling
+    XSetClipMask with a NULL GC, (basically a reintroduction
+    of the bug originally fixed here:
+    
+    	7802de6d5edaf998c98b141870dc2c6b4c0f3e91
+    
+    Let's revert for sake of the release, and fix this correctly
+    on master.
+
+ src/cairo-xlib-private.h |    1 -
+ src/cairo-xlib-screen.c  |   31 ++++++++++---------------------
+ 2 files changed, 10 insertions(+), 22 deletions(-)
+
+commit a5770c3335fccd1591f2cd58ab950a6eba77f271
+Author: Carl Worth <cworth@cworth.org>
+Date:   Fri Apr 11 10:05:18 2008 -0700
+
+    Increment version to 1.6.3 after the 1.6.2 release
+
+ configure.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
 commit 5bc6fd71398f8aa902fcffe2da5d1e70fb94aa8a
 Author: Carl Worth <cworth@cworth.org>
 Date:   Fri Apr 11 09:52:28 2008 -0700

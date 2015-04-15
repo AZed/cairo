@@ -71,17 +71,16 @@ host_triplet = @host@
 @CAIRO_HAS_OS2_SURFACE_TRUE@am__append_35 = $(os2_sources)
 @CAIRO_HAS_OS2_SURFACE_TRUE@am__append_36 = cairo-os2.pc
 @CAIRO_HAS_BEOS_SURFACE_TRUE@am__append_37 = $(beos_headers)
-@CAIRO_HAS_BEOS_SURFACE_TRUE@am__append_38 = $(beos_sources)
-@CAIRO_HAS_BEOS_SURFACE_TRUE@am__append_39 = cairo-beos.pc
-@CAIRO_HAS_GLITZ_SURFACE_TRUE@am__append_40 = $(glitz_headers)
-@CAIRO_HAS_GLITZ_SURFACE_TRUE@am__append_41 = $(glitz_sources)
-@CAIRO_HAS_GLITZ_SURFACE_TRUE@am__append_42 = cairo-glitz.pc
-@CAIRO_HAS_DIRECTFB_SURFACE_TRUE@am__append_43 = $(directfb_headers)
-@CAIRO_HAS_DIRECTFB_SURFACE_TRUE@am__append_44 = $(directfb_sources)
-@CAIRO_HAS_DIRECTFB_SURFACE_TRUE@am__append_45 = cairo-directfb.pc
-@CAIRO_HAS_FT_FONT_TRUE@am__append_46 = $(ft_headers)
-@CAIRO_HAS_FT_FONT_TRUE@am__append_47 = $(ft_sources)
-@CAIRO_HAS_FT_FONT_TRUE@am__append_48 = cairo-ft.pc
+@CAIRO_HAS_BEOS_SURFACE_TRUE@am__append_38 = cairo-beos.pc
+@CAIRO_HAS_GLITZ_SURFACE_TRUE@am__append_39 = $(glitz_headers)
+@CAIRO_HAS_GLITZ_SURFACE_TRUE@am__append_40 = $(glitz_sources)
+@CAIRO_HAS_GLITZ_SURFACE_TRUE@am__append_41 = cairo-glitz.pc
+@CAIRO_HAS_DIRECTFB_SURFACE_TRUE@am__append_42 = $(directfb_headers)
+@CAIRO_HAS_DIRECTFB_SURFACE_TRUE@am__append_43 = $(directfb_sources)
+@CAIRO_HAS_DIRECTFB_SURFACE_TRUE@am__append_44 = cairo-directfb.pc
+@CAIRO_HAS_FT_FONT_TRUE@am__append_45 = $(ft_headers)
+@CAIRO_HAS_FT_FONT_TRUE@am__append_46 = $(ft_sources)
+@CAIRO_HAS_FT_FONT_TRUE@am__append_47 = cairo-ft.pc
 subdir = src
 DIST_COMMON = $(am__cairoinclude_HEADERS_DIST) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/cairo.pc.in
@@ -152,9 +151,9 @@ am__libcairo_la_SOURCES_DIST = cairo.c cairo.h cairo-private.h \
 	cairo-quartz-font.c cairo-win32.c cairo-win32-surface.c \
 	cairo-win32-printing-surface.c cairo-win32-private.h \
 	cairo-win32-font.c cairo-os2-surface.c cairo-os2-private.h \
-	cairo-beos-surface.cpp cairo-glitz-surface.c \
-	cairo-glitz-private.h cairo-directfb-surface.c cairo-ft-font.c \
-	cairo-ft-private.h cairo-cache-private.h cairo-fixed-private.h \
+	cairo-glitz-surface.c cairo-glitz-private.h \
+	cairo-directfb-surface.c cairo-ft-font.c cairo-ft-private.h \
+	cairo-cache-private.h cairo-fixed-private.h \
 	cairo-fixed-type-private.h cairo-mutex-list-private.h \
 	cairo-types-private.h
 am__objects_1 = libcairo_la-cairo.lo libcairo_la-cairo-arc.lo \
@@ -230,27 +229,24 @@ am__objects_29 = libcairo_la-cairo-win32-font.lo
 @CAIRO_HAS_WIN32_FONT_TRUE@am__objects_30 = $(am__objects_29)
 am__objects_31 = libcairo_la-cairo-os2-surface.lo
 @CAIRO_HAS_OS2_SURFACE_TRUE@am__objects_32 = $(am__objects_31)
-am__objects_33 = cairo-beos-surface.lo
-@CAIRO_HAS_BEOS_SURFACE_TRUE@am__objects_34 = $(am__objects_33)
-am__objects_35 = libcairo_la-cairo-glitz-surface.lo
-@CAIRO_HAS_GLITZ_SURFACE_TRUE@am__objects_36 = $(am__objects_35)
-am__objects_37 = libcairo_la-cairo-directfb-surface.lo
-@CAIRO_HAS_DIRECTFB_SURFACE_TRUE@am__objects_38 = $(am__objects_37)
-am__objects_39 = libcairo_la-cairo-ft-font.lo
-@CAIRO_HAS_FT_FONT_TRUE@am__objects_40 = $(am__objects_39)
-am__objects_41 = $(am__objects_1) $(am__objects_3) $(am__objects_5) \
+am__objects_33 = libcairo_la-cairo-glitz-surface.lo
+@CAIRO_HAS_GLITZ_SURFACE_TRUE@am__objects_34 = $(am__objects_33)
+am__objects_35 = libcairo_la-cairo-directfb-surface.lo
+@CAIRO_HAS_DIRECTFB_SURFACE_TRUE@am__objects_36 = $(am__objects_35)
+am__objects_37 = libcairo_la-cairo-ft-font.lo
+@CAIRO_HAS_FT_FONT_TRUE@am__objects_38 = $(am__objects_37)
+am__objects_39 = $(am__objects_1) $(am__objects_3) $(am__objects_5) \
 	$(am__objects_7) $(am__objects_9) $(am__objects_14) \
 	$(am__objects_16) $(am__objects_18) $(am__objects_20) \
 	$(am__objects_22) $(am__objects_24) $(am__objects_26) \
 	$(am__objects_28) $(am__objects_30) $(am__objects_32) \
-	$(am__objects_34) $(am__objects_36) $(am__objects_38) \
-	$(am__objects_40)
-am__objects_42 =
-am_libcairo_la_OBJECTS = $(am__objects_41) $(am__objects_42)
+	$(am__objects_34) $(am__objects_36) $(am__objects_38)
+am__objects_40 =
+am_libcairo_la_OBJECTS = $(am__objects_39) $(am__objects_40)
 libcairo_la_OBJECTS = $(am_libcairo_la_OBJECTS)
-libcairo_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(libcairo_la_LDFLAGS) $(LDFLAGS) -o $@
+libcairo_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libcairo_la_CFLAGS) \
+	$(CFLAGS) $(libcairo_la_LDFLAGS) $(LDFLAGS) -o $@
 libcairo_beos_la_LIBADD =
 am_libcairo_beos_la_OBJECTS =
 libcairo_beos_la_OBJECTS = $(am_libcairo_beos_la_OBJECTS)
@@ -266,15 +262,6 @@ LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
-	$(LDFLAGS) -o $@
-CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
-	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
-LTCXXCOMPILE = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
-	--mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
-	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
-CXXLD = $(CXX)
-CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
-	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(libcairo_la_SOURCES) $(libcairo_beos_la_SOURCES)
 DIST_SOURCES = $(am__libcairo_la_SOURCES_DIST) \
@@ -468,8 +455,8 @@ backend_pkgconfigs = $(am__append_4) $(am__append_7) $(am__append_9) \
 	$(am__append_12) $(am__append_16) $(am__append_18) \
 	$(am__append_21) $(am__append_24) $(am__append_26) \
 	$(am__append_31) $(am__append_33) $(am__append_36) \
-	$(am__append_39) $(am__append_42) $(am__append_45) \
-	$(am__append_48)
+	$(am__append_38) $(am__append_41) $(am__append_44) \
+	$(am__append_47)
 cairo_base_headers = cairo.h
 cairo_base_sources = \
 	cairo.c					\
@@ -562,14 +549,14 @@ cairo_headers = $(cairo_base_headers) $(am__append_2) $(am__append_5) \
 	$(am__append_10) $(am__append_14) $(am__append_17) \
 	$(am__append_19) $(am__append_22) $(am__append_25) \
 	$(am__append_29) $(am__append_34) $(am__append_37) \
-	$(am__append_40) $(am__append_43) $(am__append_46)
+	$(am__append_39) $(am__append_42) $(am__append_45)
 cairo_sources = $(cairo_base_sources) $(am__append_3) $(am__append_6) \
 	$(am__append_8) $(am__append_11) \
 	$(libcairo_font_subset_sources) $(am__append_13) \
 	$(am__append_15) $(am__append_20) $(am__append_23) \
 	$(am__append_27) $(am__append_28) $(am__append_30) \
-	$(am__append_32) $(am__append_35) $(am__append_38) \
-	$(am__append_41) $(am__append_44) $(am__append_47)
+	$(am__append_32) $(am__append_35) $(am__append_40) \
+	$(am__append_43) $(am__append_46)
 font_subset_sources_base = \
 	cairo-cff-subset.c			\
 	cairo-truetype-subset.c			\
@@ -680,7 +667,7 @@ SPLINT = splint -badflag
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .cpp .i .lo .o .obj
+.SUFFIXES: .c .i .lo .o .obj
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -759,7 +746,6 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cairo-beos-surface.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcairo_la-cairo-analysis-surface.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcairo_la-cairo-arc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcairo_la-cairo-array.Plo@am__quote@
@@ -1389,27 +1375,6 @@ libcairo_la-cairo-ft-font.lo: cairo-ft-font.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='cairo-ft-font.c' object='libcairo_la-cairo-ft-font.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcairo_la_CFLAGS) $(CFLAGS) -c -o libcairo_la-cairo-ft-font.lo `test -f 'cairo-ft-font.c' || echo '$(srcdir)/'`cairo-ft-font.c
-
-.cpp.o:
-@am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ $<
-
-.cpp.obj:
-@am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
-
-.cpp.lo:
-@am__fastdepCXX_TRUE@	$(LTCXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
 
 mostlyclean-libtool:
 	-rm -f *.lo
