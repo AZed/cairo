@@ -56,8 +56,7 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(top_srcdir)/src/cairo-uninstalled.pc.in AUTHORS COPYING \
 	ChangeLog INSTALL NEWS build/compile build/config.guess \
 	build/config.sub build/depcomp build/install-sh \
-	build/ltmain.sh build/missing config.guess config.sub depcomp \
-	install-sh ltmain.sh missing
+	build/ltmain.sh build/missing
 EXTRA_PROGRAMS =
 TESTS =
 check_PROGRAMS =
