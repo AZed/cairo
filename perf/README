@@ -1,0 +1,101 @@
+This is cairo's performance test suite.
+
+To run the performance tests simply type:
+
+	make perf
+
+and the tests results will be printed on stdout
+
+TODO: We'll want to add support for charting the results. Various
+charts would be interesting:
+
+  * For a given test, how does its performance scale as a function of
+    image size
+
+  * For a given test, how do the various backends perform
+
+  * For a given test, how has the performance changed throughout the
+    history of cairo development.
+
+TODO: We'll also want to make it easy to run individual tests for
+profiling, etc.
+
+Creating a new performance test
+-------------------------------
+This is where we could use everybody's help. If you have encountered a
+sequence of cairo operations that are slower than you would like, then
+please provide a performance test. Writing a test is very simple, it
+requires you to write only a small C file with a couple of functions,
+one of which exercises the cairo calls of interest.
+
+Here is the basic structure of a performance test file:
+
+    /* Copyright © 2006 Kind Cairo User
+     *
+     * ... Licensing information here ...
+     * Please copy the MIT blurb as in other tests
+     */
+
+    #include "cairo-perf.h"
+
+    static cairo_perf_ticks_t
+    do_my_new_test (cairo_t *cr, int width, int height)
+    {
+	cairo_perf_timer_start ();
+
+	/* Make the cairo calls to be measured */
+
+	cairo_perf_timer_stop ();
+
+	return cairo_perf_timer_elapsed ();
+    }
+
+    void
+    my_new_test (cairo_perf_t *perf, cairo_t *cr, int width, int height)
+    {
+	/* First do any setup for which the execution time should not
+	 * be measured. For example, this might include loading
+	 * images from disk, creating patterns, etc. */
+
+	/* Then launch the actual performance testing. */
+	cairo_perf_run (perf, "my_new_test", do_my_new_test);
+
+	/* Finally, perform any cleanup from the setup above. */
+    }
+
+That's really all there is to writing a new test. The first function
+above is the one that does the real work and returns a timing
+number. The second function is the one that will be called by the
+performance test rig (see below for how to accomplish that), and
+allows for multiple performance cases to be written in one file,
+(simply call cairo_perf_run once for each case, passing the
+appropriate callback function to each).
+
+We go through this dance of indirectly calling your own function
+through cairo_perf_run so that cairo_perf_run can call your function
+many times and measure statistical properties over the many runs.
+
+Finally, to fully integrate your new test case you just need to add
+your new test to three different lists. (TODO: We should set this up
+better so that the lists are maintained automatically---computed from
+the list of files in cairo/perf, for example). Here's what needs to be
+added:
+
+ 1. Makefile.am: Add the new file name to the cairo_perf_SOURCES list
+
+ 2. cairo-perf.h: Add a new CAIRO_PERF_DECL line with the name of your
+    function, (my_new_test in the example above)
+
+ 3. cairo-perf.c: Add a new row to the list at the end of the file. A
+    typical entry would look like:
+
+	{ my_new_test, 16, 64 }
+
+    The last two numbers are a minimum and a maximum image size at
+    which your test should be exercised. If these values are the same,
+    then only that size will be used. If they are different, then
+    intermediate sizes will be used by doubling. So in the example
+    above, three tests would be performed at sizes of 16x16, 32x32 and
+    64x64.
+
+Thanks for your contributions and have fun with cairo!

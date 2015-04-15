@@ -1,0 +1,10 @@
+cairo-perf
+cairo-perf-diff-files
+*.o
+*.exe
+*.manifest
+*.obj
+*.ilk
+*.suo
+*.lib
+*.pdb
