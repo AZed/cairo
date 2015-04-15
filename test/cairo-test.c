@@ -121,22 +121,6 @@ cairo_test_init (const char *test_name)
 }
 
 void
-cairo_test_init (const char *test_name)
-{
-    char *log_name;
-
-    xasprintf (&log_name, "%s%s", test_name, CAIRO_TEST_LOG_SUFFIX);
-    xunlink (log_name);
-
-    cairo_test_log_file = fopen (log_name, "a");
-    if (cairo_test_log_file == NULL) {
-	fprintf (stderr, "Error opening log file: %s\n", log_name);
-	cairo_test_log_file = stderr;
-    }
-    free (log_name);
-}
-
-void
 cairo_test_log (const char *fmt, ...)
 {
     va_list va;

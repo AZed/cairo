@@ -60,7 +60,6 @@ select-font-no-show-text	\
 self-copy			\
 self-intersecting		\
 set-source			\
-show-glyphs-many		\
 show-text-current-point		\
 source-clip			\
 source-surface-scale-paint	\
@@ -84,10 +83,6 @@ zero-alpha
 
 # Then we have a collection of tests that are only run if certain
 # features are compiled into cairo
-if HAVE_PTHREAD
-TESTS += pthread-show-text
-endif
-
 if HAVE_PTHREAD
 TESTS += pthread-show-text
 endif
