@@ -3,16 +3,16 @@
                 "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
 <!ENTITY version SYSTEM "version.xml">
 ]>
-<refentry id="cairo-Quartz-Surfaces">
+<refentry id="cairo-BeOS-Surfaces">
 <refmeta>
-<refentrytitle id="top_of_page">Quartz Surfaces</refentrytitle>
+<refentrytitle id="top_of_page">BeOS Surfaces</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>CAIRO Library</refmiscinfo>
 </refmeta>
 
 <refnamediv>
-<refname>Quartz Surfaces</refname>
-<refpurpose>Rendering to Quartz surfaces</refpurpose>
+<refname>BeOS Surfaces</refname>
+<refpurpose>BeOS surface support</refpurpose>
 <!--[<xref linkend="desc" endterm="desc.title"/>]-->
 </refnamediv>
 
