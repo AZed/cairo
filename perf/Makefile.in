@@ -31,15 +31,29 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+DIST_COMMON = README $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
+	$(top_srcdir)/build/Makefile.am.common
 EXTRA_PROGRAMS = cairo-perf$(EXEEXT) cairo-perf-diff-files$(EXEEXT)
+check_PROGRAMS =
 @CAIRO_HAS_WIN32_SURFACE_TRUE@am__append_1 = cairo-perf-win32.c
 @CAIRO_HAS_OS2_SURFACE_TRUE@@CAIRO_HAS_WIN32_SURFACE_FALSE@am__append_2 = cairo-perf-os2.c
 @CAIRO_HAS_OS2_SURFACE_FALSE@@CAIRO_HAS_WIN32_SURFACE_FALSE@am__append_3 = cairo-perf-posix.c
 subdir = perf
-DIST_COMMON = README $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
-	$(top_srcdir)/configure.in
+am__aclocal_m4_deps = $(top_srcdir)/build/aclocal.cairo.m4 \
+	$(top_srcdir)/build/aclocal.enable.m4 \
+	$(top_srcdir)/build/aclocal.float.m4 \
+	$(top_srcdir)/build/aclocal.gtk-doc.m4 \
+	$(top_srcdir)/build/aclocal.makefile.m4 \
+	$(top_srcdir)/build/aclocal.pkg.m4 $(top_srcdir)/acinclude.m4 \
+	$(top_srcdir)/cairo-version.h \
+	$(top_srcdir)/build/configure.ac.version \
+	$(top_srcdir)/build/configure.ac.tools \
+	$(top_srcdir)/build/configure.ac.system \
+	$(top_srcdir)/build/configure.ac.features \
+	$(top_srcdir)/build/configure.ac.warnings \
+	$(top_srcdir)/build/configure.ac.analysis \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -80,7 +94,7 @@ cairo_perf_diff_files_DEPENDENCIES =  \
 	$(top_builddir)/boilerplate/libcairoboilerplate.la \
 	$(top_builddir)/src/libcairo.la $(am__DEPENDENCIES_1)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
-depcomp = $(SHELL) $(top_srcdir)/depcomp
+depcomp = $(SHELL) $(top_srcdir)/build/depcomp
 am__depfiles_maybe = depfiles
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -107,14 +121,17 @@ AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
 CAIROPERF_LIBS = @CAIROPERF_LIBS@
 CAIRO_CFLAGS = @CAIRO_CFLAGS@
-CAIRO_LDADD = @CAIRO_LDADD@
 CAIRO_LIBS = @CAIRO_LIBS@
+CAIRO_LIBTOOL_VERSION_INFO = @CAIRO_LIBTOOL_VERSION_INFO@
 CAIRO_NONPKGCONFIG_CFLAGS = @CAIRO_NONPKGCONFIG_CFLAGS@
 CAIRO_NONPKGCONFIG_LIBS = @CAIRO_NONPKGCONFIG_LIBS@
+CAIRO_RELEASE_STATUS = @CAIRO_RELEASE_STATUS@
 CAIRO_REQUIRES = @CAIRO_REQUIRES@
+CAIRO_TEST_UNDEFINED_LDFLAGS = @CAIRO_TEST_UNDEFINED_LDFLAGS@
 CAIRO_VERSION_MAJOR = @CAIRO_VERSION_MAJOR@
 CAIRO_VERSION_MICRO = @CAIRO_VERSION_MICRO@
 CAIRO_VERSION_MINOR = @CAIRO_VERSION_MINOR@
+CAIRO_VERSION_SONUM = @CAIRO_VERSION_SONUM@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -128,6 +145,7 @@ CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
+DSYMUTIL = @DSYMUTIL@
 ECHO = @ECHO@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
@@ -152,6 +170,7 @@ GLITZ_WGL_CFLAGS = @GLITZ_WGL_CFLAGS@
 GLITZ_WGL_LIBS = @GLITZ_WGL_LIBS@
 GREP = @GREP@
 GS = @GS@
+GTKDOC_CHECK = @GTKDOC_CHECK@
 HTML_DIR = @HTML_DIR@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
@@ -168,9 +187,9 @@ LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 LTP = @LTP@
 LTP_GENHTML = @LTP_GENHTML@
-LT_CURRENT_MINUS_AGE = @LT_CURRENT_MINUS_AGE@
 MAKEINFO = @MAKEINFO@
 MKDIR_P = @MKDIR_P@
+NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
@@ -191,7 +210,6 @@ SHELL = @SHELL@
 SHTOOL = @SHTOOL@
 STRIP = @STRIP@
 VERSION = @VERSION@
-VERSION_INFO = @VERSION_INFO@
 XARGS = @XARGS@
 XMKMF = @XMKMF@
 X_CFLAGS = @X_CFLAGS@
@@ -264,20 +282,21 @@ xlib_CFLAGS = @xlib_CFLAGS@
 xlib_LIBS = @xlib_LIBS@
 xlib_xrender_CFLAGS = @xlib_xrender_CFLAGS@
 xlib_xrender_LIBS = @xlib_xrender_LIBS@
-
-# We're using _GNU_SOURCE to get the prototype for asprintf. This may
-# not be the most portable approach, but it is pragmatic and I'm
-# willing to do something cleaner as soon as it causes someone a
-# problem.
-INCLUDES = \
-	-D_GNU_SOURCE				\
+BUILT_SOURCES = 
+CLEANFILES = *.i *.s *.gch $(EXTRA_LTLIBRARIES) $(EXTRA_PROGRAMS) \
+	$(check_PROGRAMS) valgrind-log callgrind.out.* index.html
+DISTCLEANFILES = $(BUILT_SOURCES)
+EXTRA_DIST = cairo-perf-diff Makefile.win32
+EXTRA_LTLIBRARIES = 
+MAINTAINERCLEANFILES = Makefile.in
+TESTS = cairo-perf$(EXEEXT)
+AM_CPPFLAGS = \
 	-I$(srcdir)				\
 	-I$(top_srcdir)/boilerplate		\
 	-I$(top_srcdir)/src			\
 	-I$(top_builddir)/src			\
 	$(CAIRO_CFLAGS)
 
-EXTRA_DIST = cairo-perf-diff Makefile.win32
 cairo_perf_SOURCES = cairo-perf.c cairo-perf.h cairo-perf-cover.c \
 	cairo-stats.c cairo-stats.h box-outline.c fill.c long-lines.c \
 	mosaic.c mosaic.h paint.c paint-with-alpha.c \
@@ -305,7 +324,6 @@ CAIRO_PERF_ENVIRONMENT = CAIRO_PERF_ITERATIONS="$(ITERS)" CAIRO_TEST_TARGET="$(T
 
 # Cap the maximum number of iterations during 'make check'
 TESTS_ENVIRONMENT = CAIRO_TEST_TARGET="$(TARGETS)" CAIRO_PERF_ITERATIONS="10"
-TESTS = cairo-perf$(EXEEXT)
 EXTRA_VALGRIND_FLAGS = $(CAIRO_EXTRA_VALGRIND_FLAGS)
 VALGRIND_MEMCHECK_FLAGS = \
 	--tool=memcheck \
@@ -315,17 +333,12 @@ VALGRIND_MEMCHECK_FLAGS = \
 VALGRIND_CALLGRIND_FLAGS = \
 	--tool=callgrind
 
-CLEANFILES = \
-	$(EXTRA_PROGRAMS) \
-	valgrind-log \
-	callgrind.out.* \
-	index.html
-
-all: all-am
+all: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .lo .o .obj
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/build/Makefile.am.common $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -334,9 +347,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  perf/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  perf/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  perf/Makefile
+	  $(AUTOMAKE) --gnu  perf/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -354,6 +367,13 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+
+clean-checkPROGRAMS:
+	@list='$(check_PROGRAMS)'; for p in $$list; do \
+	  f=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
+	  echo " rm -f $$p $$f"; \
+	  rm -f $$p $$f ; \
+	done
 cairo-perf$(EXEEXT): $(cairo_perf_OBJECTS) $(cairo_perf_DEPENDENCIES) 
 	@rm -f cairo-perf$(EXEEXT)
 	$(LINK) $(cairo_perf_OBJECTS) $(cairo_perf_LDADD) $(LIBS)
@@ -565,11 +585,14 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
+	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS)
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
-check: check-am
+check: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) check-am
 all-am: Makefile
 installdirs:
-install: install-am
+install: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) install-am
 install-exec: install-exec-am
 install-data: install-data-am
 uninstall: uninstall-am
@@ -590,13 +613,17 @@ clean-generic:
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
+	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
+	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
 clean: clean-am
 
-clean-am: clean-generic clean-libtool mostlyclean-am
+clean-am: clean-checkPROGRAMS clean-generic clean-libtool \
+	mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -607,6 +634,10 @@ distclean-am: clean-am distclean-compile distclean-generic \
 dvi: dvi-am
 
 dvi-am:
+
+html: html-am
+
+html-am: html-local
 
 info: info-am
 
@@ -653,9 +684,10 @@ uninstall-am:
 .MAKE: install-am install-strip
 
 .PHONY: CTAGS GTAGS all all-am check check-TESTS check-am clean \
-	clean-generic clean-libtool ctags distclean distclean-compile \
-	distclean-generic distclean-libtool distclean-tags distdir dvi \
-	dvi-am html html-am info info-am install install-am \
+	clean-checkPROGRAMS clean-generic clean-libtool ctags \
+	distclean distclean-compile distclean-generic \
+	distclean-libtool distclean-tags distdir dvi dvi-am html \
+	html-am html-local info info-am install install-am \
 	install-data install-data-am install-dvi install-dvi-am \
 	install-exec install-exec-am install-html install-html-am \
 	install-info install-info-am install-man install-pdf \
@@ -675,7 +707,7 @@ $(top_builddir)/src/libcairo.la:
 perf: cairo-perf$(EXEEXT)
 	$(CAIRO_PERF_ENVIRONMENT) ./cairo-perf$(EXEEXT)
 
-html: index.html
+html-local: index.html
 
 index.html: cairo-perf$(EXEEXT)
 	$(CAIRO_PERF_ENVIRONMENT) ./cairo-perf-diff -h HEAD > $@
@@ -693,7 +725,7 @@ perf-callgrind:
 	    $(top_builddir)/libtool --mode=execute \
 	    valgrind $(VALGRIND_CALLGRIND_FLAGS) $(EXTRA_VALGRIND_FLAGS)'
 
-.PHONY: perf html check-valgrind perf-valgrind perf-callgrind
+.PHONY: perf check-valgrind perf-valgrind perf-callgrind
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
