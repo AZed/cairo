@@ -20,49 +20,43 @@
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- * Author: Carl D. Worth <cworth@cworth.org>
- */
-
-/* Test case for bug #4409:
- *
- *	Dashes are missing initial caps
- *	https://bugs.freedesktop.org/show_bug.cgi?id=4409
+ * Authors: Carl D. Worth <cworth@cworth.org>
+ * 	    Emmanuel Pacaud <emmanuel.pacaud@lapp.in2p3.fr>
  */
 
 #include "cairo-test.h"
 
-#define LINE_WIDTH 	10.
-#define SIZE 		(5 * LINE_WIDTH)
-#define PAD		(2 * LINE_WIDTH)
+#define LINE_WIDTH 	1.
+#define SIZE 		10
+#define LINE_NBR	6
 
 static cairo_test_draw_function_t draw;
 
 cairo_test_t test = {
-    "dash-caps-joins",
-    "Test caps and joins when dashing",
-    3 * (PAD + SIZE) + PAD,
-    PAD + SIZE + PAD + SIZE + PAD,
+    "long-lines",
+    "Test long lines"
+    "\nLong lines are not drawn due to the limitations of the internal 16.16 fixed-point coordinates",
+    SIZE * (LINE_NBR + 1),
+    SIZE * (LINE_NBR + 1),
     draw
 };
 
-static void
-make_path (cairo_t *cr)
-{
-    cairo_move_to (cr, 0., 0.);
-    cairo_rel_line_to (cr, 0., SIZE);
-    cairo_rel_line_to (cr, SIZE, 0.);
-    cairo_close_path (cr);
-
-    cairo_move_to (cr, 2 * LINE_WIDTH, 0.);
-    cairo_rel_line_to (cr, 3 * LINE_WIDTH, 0.);
-    cairo_rel_line_to (cr, 0., 3 * LINE_WIDTH);
-}
+struct {
+    double length;
+    double red, green, blue;
+} lines[LINE_NBR] = {
+    {      100.0, 1.0, 0.0, 0.0 },
+    {    10000.0, 0.0, 1.0, 0.0 },
+    {   100000.0, 0.0, 0.0, 1.0 },
+    {  1000000.0, 1.0, 1.0, 0.0 },
+    { 10000000.0, 0.0, 1.0, 1.0 },
+    {100000000.0, 1.0, 0.0, 1.0 }
+};
 
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
-    double dash[] = {LINE_WIDTH, 1.5 * LINE_WIDTH};
-    double dash_offset = -2 * LINE_WIDTH;
+    double pos;
     int i;
 
     /* We draw in the default black, so paint white first. */
@@ -71,36 +65,23 @@ draw (cairo_t *cr, int width, int height)
     cairo_paint (cr);
     cairo_restore (cr);
 
-    for (i=0; i<2; i++) {
-	cairo_save (cr);
-	cairo_set_line_width (cr, LINE_WIDTH);
-	cairo_set_dash (cr, dash, sizeof(dash)/sizeof(dash[0]), dash_offset);
 
-	cairo_translate (cr, PAD, PAD);
+    cairo_set_line_width (cr, LINE_WIDTH);
 
-	make_path (cr);
-	cairo_set_line_cap (cr, CAIRO_LINE_CAP_BUTT);
-	cairo_set_line_join (cr, CAIRO_LINE_JOIN_BEVEL);
+    pos = SIZE + .5;
+    for (i = 0; i < LINE_NBR; i++) {
+	cairo_move_to (cr, pos, -lines[i].length);
+	cairo_line_to (cr, pos, +lines[i].length);
+	cairo_set_source_rgb (cr, lines[i].red, lines[i].green, lines[i].blue);
 	cairo_stroke (cr);
-
-	cairo_translate (cr, SIZE + PAD, 0.);
-
-	make_path (cr);
-	cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
-	cairo_set_line_join (cr, CAIRO_LINE_JOIN_ROUND);
-	cairo_stroke (cr);
-
-	cairo_translate (cr, SIZE + PAD, 0.);
-
-	make_path (cr);
-	cairo_set_line_cap (cr, CAIRO_LINE_CAP_SQUARE);
-	cairo_set_line_join (cr, CAIRO_LINE_JOIN_MITER);
-	cairo_stroke (cr);
-
-	cairo_restore (cr);
-	cairo_translate (cr, 0., SIZE + PAD);
-	dash_offset = 0;
+	pos += SIZE;
     }
+
+    /* This should display a perfect vertically centered black line */
+    cairo_move_to (cr, 0.5, -1e100);
+    cairo_line_to (cr, pos,  1e100);
+    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
+    cairo_stroke (cr);
 
     return CAIRO_TEST_SUCCESS;
 }
