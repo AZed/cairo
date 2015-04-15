@@ -1,5 +1,5 @@
 /*
- * $Id: ictrap.c,v 1.26 2005-06-25 03:13:19 jrmuizel Exp $
+ * $Id: ictrap.c,v 1.26 2005/06/25 03:13:19 jrmuizel Exp $
  *
  * Copyright © 2002 Keith Packard
  *

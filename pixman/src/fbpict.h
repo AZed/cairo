@@ -1,5 +1,5 @@
 /*
- * $Id: fbpict.h,v 1.1 2005-08-11 04:10:13 vektor Exp $
+ * $Id: fbpict.h,v 1.1 2005/08/11 04:10:13 vektor Exp $
  *
  * Copyright © 2000 Keith Packard
  *             2005 Lars Knoll & Zack Rusin, Trolltech

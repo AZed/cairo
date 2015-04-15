@@ -1,5 +1,5 @@
 /*
- * $Id: cairo-wideint.c,v 1.6 2005-07-30 19:57:54 keithp Exp $
+ * $Id: cairo-wideint.c,v 1.6 2005/07/30 19:57:54 keithp Exp $
  *
  * Copyright © 2004 Keith Packard
  *
